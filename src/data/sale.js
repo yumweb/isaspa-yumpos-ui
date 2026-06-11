@@ -29,3 +29,15 @@ export const familyCardDefaultPackage = [
     name: "Platinum (Rs. 30000/-)",
   },
 ];
+
+// Time-based family card packages (balance tracked in minutes via serviceTime).
+// price (value, ₹) -> serviceTime (minutes) -> expiry (months). From the legacy
+// Isa Spa packages: 5000/3h/2mo … 50000/45h/12mo.
+export const familyCardTimePackage = [
+  { id: 1, value: 5000, serviceTime: 180, expiry: 2, name: "Simple (Rs. 5000 / 3 hrs)" },
+  { id: 2, value: 10000, serviceTime: 420, expiry: 3, name: "Classic (Rs. 10000 / 7 hrs)" },
+  { id: 3, value: 15000, serviceTime: 660, expiry: 3, name: "Premium (Rs. 15000 / 11 hrs)" },
+  { id: 4, value: 20000, serviceTime: 900, expiry: 6, name: "Elite (Rs. 20000 / 15 hrs)" },
+  { id: 5, value: 25000, serviceTime: 1200, expiry: 9, name: "Royal (Rs. 25000 / 20 hrs)" },
+  { id: 6, value: 50000, serviceTime: 2700, expiry: 12, name: "Majestic Platinum (Rs. 50000 / 45 hrs)" },
+];

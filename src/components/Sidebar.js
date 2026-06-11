@@ -35,7 +35,7 @@ import { faServicestack } from "@fortawesome/free-brands-svg-icons";
 import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
 import ReactHero from "../assets/img/technologies/react-hero-logo.svg";
 import { Nav, Badge, Image, Button, Navbar } from "@themesberg/react-bootstrap";
-import Logo from "../assets/img/brand/studio11-logo.png";
+import Logo from "../assets/img/brand/isa-spa-logo.png";
 
 export default (props = {}) => {
   const location = useLocation();

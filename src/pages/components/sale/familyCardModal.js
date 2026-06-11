@@ -7,7 +7,10 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import { familyCardDefaultPackage } from "../../../data/sale";
+import {
+  familyCardDefaultPackage,
+  familyCardTimePackage,
+} from "../../../data/sale";
 
 const FamilyCardModal = ({
   setFamilyCardNumber,
@@ -20,6 +23,8 @@ const FamilyCardModal = ({
   setValue,
   setValdityDate,
   submitFamilyCard,
+  serviceTime,
+  handleTimePackage,
 }) => {
   return (
     <Container
@@ -101,6 +106,7 @@ const FamilyCardModal = ({
               Select Package Type
             </MenuItem>
             <MenuItem value="default">Default Package</MenuItem>
+            <MenuItem value="time">Time Package (minutes)</MenuItem>
             <MenuItem value="custom">Custom Package</MenuItem>
           </Select>
         </InputLabel>
@@ -145,6 +151,59 @@ const FamilyCardModal = ({
               ))}
             </Select>
           </InputLabel>
+        </FormGroup>
+      )}
+      {description === "time" && (
+        <FormGroup
+          style={{
+            display: "inline-block",
+            width: "100%",
+            fontFamily: "Russo One, sans-serif",
+            marginTop: "10px",
+          }}
+        >
+          <InputLabel
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "5px",
+              color: "black",
+              fontFamily: "Russo One, sans-serif",
+              width: "100%",
+            }}
+          >
+            Time Package :
+            <Select
+              value={value}
+              IconComponent={false}
+              variant="standard"
+              disableUnderline={true}
+              style={{
+                width: "80%",
+                border: "1px solid Gray",
+                borderRadius: "3px",
+              }}
+              onChange={handleTimePackage}
+            >
+              {familyCardTimePackage?.map((f, x) => (
+                <MenuItem key={x} value={f.value}>
+                  {f.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </InputLabel>
+          {serviceTime ? (
+            <p
+              style={{
+                textAlign: "right",
+                margin: "4px 0 0",
+                fontSize: "13px",
+                color: "green",
+              }}
+            >
+              Balance: {serviceTime} minutes
+            </p>
+          ) : null}
         </FormGroup>
       )}
       {description === "custom" && (

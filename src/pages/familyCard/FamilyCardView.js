@@ -20,6 +20,7 @@ import React, { useEffect, useState } from "react";
 import clientAdapter from "../../lib/clientAdapter";
 import moment from "moment-timezone";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { familyCardTimePackage } from "../../data/sale";
 
 const FamilyCardView = ({ onClickBack, familyCard }) => {
   const [data, setData] = useState([]);
@@ -28,6 +29,8 @@ const FamilyCardView = ({ onClickBack, familyCard }) => {
   const [expiryDate, setExpiryDate] = useState("");
   const [description, setDescription] = useState("");
   const [inactive, setInactive] = useState(false);
+  const [isTimeBased, setIsTimeBased] = useState(false);
+  const [serviceTime, setServiceTime] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customer, setCustomer] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -46,6 +49,8 @@ const FamilyCardView = ({ onClickBack, familyCard }) => {
       setFamilyCardValue(familyCard.editItem.value);
       setDescription(familyCard.editItem.description);
       setInactive(familyCard.editItem.inactive === "Active" ? false : true);
+      setIsTimeBased(Number(familyCard.editItem.isTimeBased) === 1);
+      setServiceTime(familyCard.editItem.serviceTime || "");
       setExpiryDate(
         moment(familyCard.editItem.validityDate).format("YYYY-MM-DD")
       );
@@ -83,6 +88,22 @@ const FamilyCardView = ({ onClickBack, familyCard }) => {
   };
   const onChangeExpirydate = (e) => {
     setExpiryDate(e.target.value);
+  };
+  const onChangeTimeBased = (e) => {
+    setIsTimeBased(e.target.checked);
+    if (!e.target.checked) {
+      setServiceTime("");
+    }
+  };
+  const onSelectTimePackage = (e) => {
+    const pkg = familyCardTimePackage.find(
+      (p) => String(p.id) === e.target.value
+    );
+    if (pkg) {
+      setFamilyCardValue(pkg.value);
+      setServiceTime(pkg.serviceTime);
+      setExpiryDate(moment().add(pkg.expiry, "months").format("YYYY-MM-DD"));
+    }
   };
   const fetchSearchResults = async (name) => {
     try {
@@ -139,6 +160,13 @@ const FamilyCardView = ({ onClickBack, familyCard }) => {
         severity: "error",
         message: "Expiry date is required",
       });
+    } else if (isTimeBased && !Number(serviceTime)) {
+      setSnackBar({
+        ...snackBar,
+        open: true,
+        severity: "error",
+        message: "Service time (minutes) is required for a time-based card",
+      });
     } else {
       return true;
     }
@@ -155,6 +183,8 @@ const FamilyCardView = ({ onClickBack, familyCard }) => {
       value: Number(familyCardValue),
       validityDate: expiryDate,
       inactive: inactive,
+      isTimeBased: isTimeBased ? 1 : 0,
+      serviceTime: isTimeBased ? Number(serviceTime) : null,
     };
     if (customerId) {
       options.customerId = customerId;
@@ -380,6 +410,119 @@ const FamilyCardView = ({ onClickBack, familyCard }) => {
                 ></Input>
               </InputLabel>
             </FormGroup>
+            <FormGroup
+              style={{
+                display: "inline-block",
+                width: "100%",
+                fontFamily: "Russo One, sans-serif",
+                marginTop: "10px",
+              }}
+            >
+              <InputLabel
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "5px",
+                  color: "black",
+                  fontFamily: "Russo One, sans-serif",
+                  width: "100%",
+                }}
+              >
+                Time-based (minutes) card :
+                <Checkbox
+                  checked={isTimeBased}
+                  onChange={onChangeTimeBased}
+                  disabled={familyCard.isEditing}
+                  inputProps={{ "aria-label": "time-based" }}
+                  style={{ left: "-77%" }}
+                />
+              </InputLabel>
+            </FormGroup>
+            {isTimeBased && !familyCard.isEditing && (
+              <FormGroup
+                style={{
+                  display: "inline-block",
+                  width: "100%",
+                  fontFamily: "Russo One, sans-serif",
+                  marginTop: "10px",
+                }}
+              >
+                <InputLabel
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: "5px",
+                    color: "black",
+                    fontFamily: "Russo One, sans-serif",
+                    width: "100%",
+                  }}
+                >
+                  Package :
+                  <select
+                    onChange={onSelectTimePackage}
+                    defaultValue=""
+                    style={{
+                      border: "1px solid Gray",
+                      width: "80%",
+                      padding: "2px",
+                      borderRadius: "3px",
+                      backgroundColor: "white",
+                    }}
+                  >
+                    <option value="" disabled>
+                      Select a package (auto-fills value, time, expiry)
+                    </option>
+                    {familyCardTimePackage.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </InputLabel>
+              </FormGroup>
+            )}
+            {isTimeBased && (
+              <FormGroup
+                style={{
+                  display: "inline-block",
+                  width: "100%",
+                  fontFamily: "Russo One, sans-serif",
+                  marginTop: "10px",
+                }}
+              >
+                <InputLabel
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: "5px",
+                    color: "red",
+                    fontFamily: "Russo One, sans-serif",
+                    width: "100%",
+                  }}
+                >
+                  Service Time (minutes) :
+                  <Input
+                    disableUnderline={true}
+                    required
+                    readOnly={familyCard.isEditing ? true : false}
+                    size="small"
+                    type="number"
+                    style={{
+                      display: "flex",
+                      border: "1px solid Gray",
+                      width: "80%",
+                      padding: "2px",
+                      borderRadius: "3px",
+                      backgroundColor: "white",
+                    }}
+                    value={serviceTime}
+                    onChange={(e) =>
+                      !familyCard.isEditing && setServiceTime(e.target.value)
+                    }
+                  ></Input>
+                </InputLabel>
+              </FormGroup>
+            )}
             <FormGroup
               style={{
                 display: "inline-block",
