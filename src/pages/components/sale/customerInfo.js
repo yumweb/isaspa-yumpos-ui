@@ -145,9 +145,13 @@ const CustomerInfo = ({
                   <td>
                     {familyCards.map((card, index) => (
                       <span key={card.id}>
-                        {`${card.familycardNumber} (Rs.${(
-                          Math.round(card.value * 100) / 100
-                        ).toFixed(2)})`}
+                        {Number(card.isTimeBased) === 1
+                          ? `${card.familycardNumber} (${
+                              Number(card.serviceTime) || 0
+                            } min)`
+                          : `${card.familycardNumber} (Rs.${(
+                              Math.round(card.value * 100) / 100
+                            ).toFixed(2)})`}
                         {index !== familyCards.length - 1 && <span>, </span>}
                       </span>
                     ))}

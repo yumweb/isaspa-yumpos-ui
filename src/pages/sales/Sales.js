@@ -43,7 +43,10 @@ import CustomerInfo from "../components/sale/customerInfo";
 import CustomerListDropdown from "../components/sale/customerListDropdown";
 import AddPaymentSection from "../components/sale/addPaymentSection";
 import SearchItemSection from "../components/sale/searchItemSection";
-import { familyCardDefaultPackage } from "../../data/sale";
+import {
+  familyCardDefaultPackage,
+  familyCardTimePackage,
+} from "../../data/sale";
 import FamilyCardModal from "../components/sale/familyCardModal";
 import { Modal } from "@themesberg/react-bootstrap";
 import {
@@ -190,6 +193,7 @@ const Sales = () => {
   const [showCustPrevSale, setShowCustPrevSale] = useState(false);
   const [familycardNumber, setFamilyCardNumber] = useState("");
   const [balance, setBalance] = useState("");
+  const [serviceTime, setServiceTime] = useState("");
   const [value, setValue] = useState(0);
   const [description, setDescription] = useState("");
   const [validityDate, setValdityDate] = useState("");
@@ -200,7 +204,14 @@ const Sales = () => {
   const [locationTaxDetails, setLocationTaxDetails] = useState(null);
   const [cardNumber, setCardNumber] = useState({
     giftCard: { id: null, number: "", redeemValue: 0, cNumber: "" },
-    familyCard: { id: null, number: "", redeemValue: 0, cNumber: "" },
+    familyCard: {
+      id: null,
+      number: "",
+      redeemValue: 0,
+      cNumber: "",
+      isTimeBased: 0,
+      redeemMinutes: 0,
+    },
     cupon: { id: null, number: "", redeemValue: 0, cNumber: "" },
     points: { id: null, number: "", redeemValue: 0, cNumber: "" },
   });
@@ -299,6 +310,20 @@ const Sales = () => {
     setValue(e.target.value);
   };
 
+  // Time-based package picked while selling a card in-sale: fill price, minutes
+  // and validity from the chosen package.
+  const handleTimePackage = (e) => {
+    const pkg = familyCardTimePackage.find(
+      (p) => p.value === Number(e.target.value)
+    );
+    if (pkg) {
+      setValue(pkg.value);
+      setBalance(pkg.value);
+      setServiceTime(pkg.serviceTime);
+      setValdityDate(moment().add(pkg.expiry, "months").format("YYYY-MM-DD"));
+    }
+  };
+
   const submitFamilyCard = async () => {
     const customerId = selectedCustomer?.person.id;
     const options = {
@@ -328,15 +353,19 @@ const Sales = () => {
       severity: "success",
       message: `Successfully created familycards`,
     });
+    const isTimeBasedCard = description === "time" || Number(serviceTime) > 0;
     const cartitem = {
       itemId: 2909,
-      value: Number(options.balance),
+      // monetary card -> balance (incl. bonus); time card -> price paid
+      value: isTimeBasedCard ? Number(options.value) : Number(options.balance),
       type: "familyCard",
       familyCardNumber: options.familycardNumber,
       costPrice: Number(options.value),
       unitPrice: Number(options.value),
       description: options.familycardNumber,
       validityDate: validityDate,
+      isTimeBased: isTimeBasedCard ? 1 : 0,
+      serviceTime: isTimeBasedCard ? Number(serviceTime) : null,
     };
     addItemToCart(cartitem);
     setFamCard(false);
@@ -915,6 +944,8 @@ const Sales = () => {
           ];
         })(),
         description: item.item.description,
+        // Service duration in minutes (used to deduct from time-based family cards)
+        size: Number(item.item.size) || 0,
       };
     }
     if (item.type === "discount") {
@@ -988,6 +1019,8 @@ const Sales = () => {
         familyCardNumber: item.familyCardNumber,
         familyCardValue: item.value,
         validityDate: item.validityDate,
+        isTimeBased: item.isTimeBased || 0,
+        serviceTime: item.serviceTime ?? null,
       };
     }
 
@@ -1367,6 +1400,12 @@ const Sales = () => {
     return cardValue;
   };
 
+  // Total service minutes in the cart, summed from each line's `size`
+  // (service duration). Used to deduct from a time-based family card.
+  const getCartServiceMinutes = () => {
+    return cartItems.reduce((sum, i) => sum + (Number(i.size) || 0), 0);
+  };
+
   const checkFamilyCardExists = async (familyCardNumber) => {
     const res = await clientAdapter.getFamilyCardbyLocation(
       1,
@@ -1433,22 +1472,60 @@ const Sales = () => {
       const familycardExist = await checkFamilyCardExists(
         cardNumber.familyCard.number
       );
-      if (
-        familycardExist?.familycards.length &&
-        familycardExist?.familycards[0]?.person?.id === personId &&
-        !familycardExist?.familycards[0]?.inactive
-      ) {
+      const fcard = familycardExist?.familycards?.[0];
+      if (fcard && fcard.person?.id === personId && !fcard.inactive) {
+        const isTimeBased = Number(fcard.isTimeBased) === 1;
+        if (isTimeBased) {
+          // Time-based card: it pays for the cart's services in MINUTES.
+          const requiredMinutes = getCartServiceMinutes();
+          const availableMinutes = Number(fcard.serviceTime) || 0;
+          if (requiredMinutes <= 0) {
+            setSnackBar({
+              open: true,
+              severity: "error",
+              message:
+                "Add a service to the cart before redeeming a time-based family card.",
+            });
+            return null;
+          }
+          if (availableMinutes < requiredMinutes) {
+            setSnackBar({
+              open: true,
+              severity: "error",
+              message: `Family card has ${availableMinutes} min left but the cart needs ${requiredMinutes} min.`,
+            });
+            return null;
+          }
+          const redeemValue = Number(amountTendered) || 0;
+          const d = {
+            ...cardNumber,
+            familyCard: {
+              id: fcard.id,
+              number: fcard.familycardNumber,
+              redeemValue,
+              cNumber: fcard.familycardNumber,
+              isTimeBased: 1,
+              redeemMinutes: requiredMinutes,
+            },
+          };
+          window.localStorage.setItem("yumpos_card_number", JSON.stringify(d));
+          setCardNumber(d);
+          return redeemValue;
+        }
+        // Monetary card (existing behaviour).
         const updatedAmount = await deductAmountFromCard(
           amountTendered,
-          familycardExist.familycards[0]?.value
+          fcard.value
         );
         const d = {
           ...cardNumber,
           familyCard: {
-            id: familycardExist?.familycards[0]?.id,
-            number: familycardExist?.familycards[0].familycardNumber,
+            id: fcard.id,
+            number: fcard.familycardNumber,
             redeemValue: updatedAmount,
-            cNumber: familycardExist?.familycards[0]?.familycardNumber,
+            cNumber: fcard.familycardNumber,
+            isTimeBased: 0,
+            redeemMinutes: 0,
           },
         };
         window.localStorage.setItem("yumpos_card_number", JSON.stringify(d));
@@ -1703,7 +1780,12 @@ const Sales = () => {
         saleId: String(saleId),
         familyCardNumber: cn.familyCard.cNumber,
         redeemValue: Number(cn.familyCard.redeemValue),
+        customerId: selectedCustomer?.person?.id,
       };
+      // Time-based cards deduct minutes (service_time), not rupees.
+      if (Number(cn.familyCard.isTimeBased) === 1) {
+        data.redeemMinutes = Number(cn.familyCard.redeemMinutes) || 0;
+      }
       res = await clientAdapter.redeemFamilyCards(cn.familyCard.id, data);
     }
     if (checkifCardReedemed()?.Coupon) {
@@ -2144,6 +2226,8 @@ const Sales = () => {
                 moment(i.validityDate).toISOString() ||
                 "2023-12-31T13:39:18.451Z",
               value: Number(i.familyCardValue) || 0,
+              isTimeBased: i.isTimeBased ? 1 : 0,
+              serviceTime: i.isTimeBased ? Number(i.serviceTime) || 0 : null,
             },
           };
           const iData = {
@@ -3986,6 +4070,8 @@ const Sales = () => {
               setValdityDate={setValdityDate}
               handlefamilyCardValue={handlefamilyCardValue}
               submitFamilyCard={submitFamilyCard}
+              serviceTime={serviceTime}
+              handleTimePackage={handleTimePackage}
             />
           </Offcanvas.Body>
         </Offcanvas>
