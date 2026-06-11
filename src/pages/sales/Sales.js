@@ -471,9 +471,14 @@ const Sales = () => {
   const getLocationTaxData = () => {
     try {
       const storedTaxRate = localStorage.getItem("yumpos_locationTaxRate");
+      // Guard against a literal "undefined"/"null" string accidentally stored.
+      const hasStored =
+        storedTaxRate &&
+        storedTaxRate !== "undefined" &&
+        storedTaxRate !== "null";
       return (
         locationTaxDetails ||
-        (storedTaxRate ? JSON.parse(storedTaxRate) : null) ||
+        (hasStored ? JSON.parse(storedTaxRate) : null) ||
         locationObject
       );
     } catch (error) {
@@ -501,13 +506,15 @@ const Sales = () => {
     setLoading(true);
     const res = await clientAdapter.getLocationData(id);
     setLoading(false);
-    if (res.taxRates) {
+    // Only persist a real tax config; never JSON.stringify(undefined) which
+    // stores the literal string "undefined" and breaks later parsing.
+    if (res && res.taxRates) {
       setLocationTaxDetails(res.taxRates);
+      localStorage.setItem(
+        "yumpos_locationTaxRate",
+        JSON.stringify(res.taxRates)
+      );
     }
-    localStorage.setItem(
-      "yumpos_locationTaxRate",
-      JSON.stringify(res.taxRates)
-    );
 
     const technicians = filter(res.employeeConnection, (e) => {
       return (

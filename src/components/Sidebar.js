@@ -208,6 +208,7 @@ export default (props = {}) => {
                 icon={faUserPlus}
                 link={AppRoutes.CustomerRetentionReport.path}
               />
+              {/* Best Practices — hidden until content is refreshed
               <NavItem
                 title={
                   <>
@@ -225,7 +226,7 @@ export default (props = {}) => {
                 }
                 icon={faBook}
                 link={AppRoutes.BestPractices.path}
-              />
+              /> */}
               {userInfo.isWhatsappEnabled && (
                 <>
                   <NavItem
