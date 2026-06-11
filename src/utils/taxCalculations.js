@@ -16,7 +16,14 @@ export const roundTo2 = (num) => {
  * @returns {Object} Tax configuration
  */
 export const getTaxConfiguration = (locationData) => {
-  console.log(locationData);
+  // Coerce a stored tax rate to a number. Isa Spa's untaxed locations carry
+  // NULL rates ("Sales Tax"/"Sales Tax 2"), and a genuine 0 is valid — so
+  // NULL/empty/non-numeric resolves to 0 (untaxed), never a fabricated 9%
+  // (which previously taxed untaxed locations at 18%). Matches the API.
+  const parseRate = (rate) => {
+    const n = parseFloat(rate);
+    return Number.isFinite(n) ? n : 0;
+  };
 
   // Handle different data structure formats
   let taxRates = null;
@@ -28,31 +35,25 @@ export const getTaxConfiguration = (locationData) => {
     // Nested format: { taxRates: [{ name: "CGST", rate: "9" }, ...] }
     taxRates = locationData.taxRates;
   } else if (locationData && (locationData.default_tax_1_rate || locationData.default_tax_2_rate)) {
-    // Legacy format: { default_tax_1_rate: "9", default_tax_1_name: "CGST", ... }
+    // Legacy format: { default_tax_1_rate: "2.5", default_tax_1_name: "CGST", ... }
     taxRates = [
-      { name: locationData.default_tax_1_name || "CGST", rate: locationData.default_tax_1_rate || "9" },
-      { name: locationData.default_tax_2_name || "SGST", rate: locationData.default_tax_2_rate || "9" }
+      { name: locationData.default_tax_1_name || "CGST", rate: locationData.default_tax_1_rate },
+      { name: locationData.default_tax_2_name || "SGST", rate: locationData.default_tax_2_rate },
     ];
   }
 
   if (!taxRates || taxRates.length < 2) {
-    // Default fallback to 18% (9% + 9%)
-    return {
-      rate1: 9,
-      name1: "CGST",
-      rate2: 9,
-      name2: "SGST",
-      totalRate: 18,
-    };
+    // No tax config on the location => untaxed (0%), matching the API.
+    return { rate1: 0, name1: "CGST", rate2: 0, name2: "SGST", totalRate: 0 };
   }
 
-  const rate1 = parseFloat(taxRates[0]?.rate) || 9;
-  const rate2 = parseFloat(taxRates[1]?.rate) || 9;
+  const rate1 = parseRate(taxRates[0]?.rate);
+  const rate2 = parseRate(taxRates[1]?.rate);
 
   return {
     rate1,
-    name1: "CGST",
-    name2: "SGST",
+    name1: taxRates[0]?.name || "CGST",
+    name2: taxRates[1]?.name || "SGST",
     rate2,
     totalRate: rate1 + rate2,
   };
@@ -180,10 +181,12 @@ export const calculateCartTaxes = (cartItems, taxConfig, subtotal) => {
       taxAmount = (basePrice * item.quantityPurchased * itemTotalTaxRate) / 100;
     }
 
-    // Split tax amount proportionally among tax components
+    // Split tax amount proportionally among tax components.
+    // Guard against a 0% total rate (untaxed location) -> avoid NaN.
     itemTaxes.forEach((tax) => {
       const taxKey = `${tax.percent}% ${tax.name}`;
-      const proportion = tax.percent / itemTotalTaxRate;
+      const proportion =
+        itemTotalTaxRate > 0 ? tax.percent / itemTotalTaxRate : 0;
       const taxPortion = taxAmount * proportion;
 
       if (!taxTotals[taxKey]) {
@@ -237,14 +240,11 @@ export const getTaxBreakdown = (taxCalculation, taxConfig) => {
  * @returns {boolean} Whether configuration is valid
  */
 export const validateTaxConfiguration = (taxConfig) => {
-  // CGST and SGST should be equal
-  if (taxConfig.rate1 !== taxConfig.rate2) {
-    return false;
-  }
-
-  // Total should be either 5% or 18%
-  const validTotals = [5, 18];
-  return validTotals.includes(taxConfig.totalRate);
+  const { rate1, rate2, totalRate } = taxConfig;
+  if (!Number.isFinite(rate1) || !Number.isFinite(rate2)) return false;
+  if (rate1 < 0 || rate2 < 0) return false;
+  // Isa Spa runs 0% / 5% / 10% (and an 18% retail item); GST never exceeds 28%.
+  return totalRate >= 0 && totalRate <= 28;
 };
 
 /**
