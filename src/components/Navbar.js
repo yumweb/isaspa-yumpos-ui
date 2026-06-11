@@ -158,7 +158,11 @@ export default () => {
             >
               <img src="/pos-support.png" alt="Support" />
             </a>
-            <a href="http://studio11.brandstore.biz" target="_blank">
+            <a
+              href="https://isaspa.brandstore.biz/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <img src="/brandstore-order.png" alt="Brandstore Portal" />
             </a>
           </div>
