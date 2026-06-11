@@ -1,0 +1,518 @@
+// AI Chat Page Styles
+.ai-chat-page {
+  .chat-container {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .chat-messages {
+    background: #f8f9fa;
+  }
+
+  .empty-state {
+    .robot-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+  }
+
+  .message-wrapper {
+    display: flex;
+
+    &.user {
+      justify-content: flex-end;
+    }
+
+    &.assistant {
+      justify-content: flex-start;
+    }
+  }
+
+  .message {
+    display: flex;
+    max-width: 80%;
+    gap: 12px;
+
+    &.user {
+      flex-direction: row-reverse;
+
+      .message-avatar {
+        background: #262b40;
+        color: white;
+      }
+
+      .message-content {
+        background: #262b40;
+        color: white;
+        border-radius: 18px 18px 4px 18px;
+      }
+    }
+
+    &.ai, &.error {
+      .message-avatar {
+        background: #e8f5e9;
+        color: #4caf50;
+      }
+
+      .message-content {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 18px 18px 18px 4px;
+      }
+    }
+
+    &.error {
+      .message-content {
+        background: #ffebee;
+        border-color: #ffcdd2;
+        color: #c62828;
+      }
+    }
+  }
+
+  .message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .message-content {
+    padding: 12px 16px;
+
+    .message-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .message-sources {
+      padding-top: 8px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+  }
+
+  .typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 4px 0;
+
+    span {
+      width: 8px;
+      height: 8px;
+      background: #bdbdbd;
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+
+      &:nth-child(1) { animation-delay: 0s; }
+      &:nth-child(2) { animation-delay: 0.2s; }
+      &:nth-child(3) { animation-delay: 0.4s; }
+    }
+  }
+
+  @keyframes typing {
+    0%, 60%, 100% {
+      transform: translateY(0);
+      opacity: 0.4;
+    }
+    30% {
+      transform: translateY(-4px);
+      opacity: 1;
+    }
+  }
+
+  .chat-input-area {
+    background: white;
+
+    .input-wrapper {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+
+      textarea {
+        flex: 1;
+        border-radius: 24px;
+        padding: 12px 20px;
+        resize: none;
+        min-height: 48px;
+        max-height: 120px;
+        border: 2px solid #e0e0e0;
+        transition: border-color 0.2s;
+
+        &:focus {
+          border-color: #262b40;
+          box-shadow: none;
+          outline: none;
+        }
+      }
+
+      .send-button {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .suggested-questions {
+    .btn {
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      // Normal state: dark and visible
+      background: #262b40;
+      color: white;
+      border-color: #262b40;
+
+      &:hover {
+        // Hover state: lighter with subtle effect
+        background: #3a4063;
+        color: white;
+        border-color: #3a4063;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(38, 43, 64, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+// Best Practices Page Styles
+.best-practices-page {
+  // Ensure content expands naturally and doesn't get constrained by flex parents
+  flex-shrink: 0 !important;
+  height: auto !important;
+  min-height: 0;
+
+  // Disable text selection
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  .card {
+    height: auto !important;
+    flex-shrink: 0;
+  }
+
+  .category-card {
+    transition: all 0.2s ease;
+    border: 2px solid transparent !important;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    }
+
+    &.selected {
+      border-color: #262b40 !important;
+      background: #f8f9fa;
+    }
+  }
+
+  .documents-table {
+    th {
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6c757d;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    .document-row {
+      transition: background-color 0.15s;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      td {
+        vertical-align: middle;
+        padding: 0.5rem 1rem;
+      }
+    }
+
+    .doc-icon {
+      width: 32px;
+      height: 32px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    th {
+      padding: 0.5rem 1rem !important;
+    }
+  }
+}
+
+// Document View Page Styles
+.document-view-page {
+  // Ensure content expands naturally and doesn't get constrained by flex parents
+  flex-shrink: 0 !important;
+  height: auto !important;
+  min-height: 0;
+
+  // Disable text selection
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  .card {
+    height: auto !important;
+    flex-shrink: 0;
+  }
+
+  .document-content {
+    height: auto !important;
+  }
+  .back-link {
+    text-decoration: none;
+    font-size: 0.9rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .document-content {
+    // Styles for static HTML content from docx
+    .static-content {
+      color: #333;
+      font-size: 1rem;
+      line-height: 1.8;
+
+      // Remove first paragraph if it's just the title (duplicate)
+      > p:first-child {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #262b40;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+        text-align: justify;
+      }
+
+      // Headings from docx
+      h1, .doc-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #262b40;
+        margin: 2rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #262b40;
+      }
+
+      h2, .doc-heading-1 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #262b40;
+        margin: 2rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      h3, .doc-heading-2 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #495057;
+        margin: 1.5rem 0 0.75rem;
+      }
+
+      h4, .doc-heading-3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #6c757d;
+        margin: 1.25rem 0 0.5rem;
+      }
+
+      // Bold text as section headers
+      strong {
+        color: #262b40;
+      }
+
+      // Emphasized text
+      em {
+        font-style: italic;
+        color: #495057;
+      }
+
+      // Underlined text
+      u {
+        text-decoration: underline;
+        text-decoration-color: #262b40;
+      }
+
+      // Lists
+      ul, ol {
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+
+        li {
+          margin-bottom: 0.5rem;
+          line-height: 1.6;
+        }
+      }
+
+      ul {
+        list-style-type: disc;
+
+        ul {
+          list-style-type: circle;
+          margin-top: 0.5rem;
+        }
+      }
+
+      ol {
+        list-style-type: decimal;
+
+        ol {
+          list-style-type: lower-alpha;
+          margin-top: 0.5rem;
+        }
+      }
+
+      // Tables
+      table {
+        width: 100%;
+        margin-bottom: 1.5rem;
+        border-collapse: collapse;
+
+        th, td {
+          padding: 0.75rem;
+          border: 1px solid #dee2e6;
+        }
+
+        th {
+          background: #f8f9fa;
+          font-weight: 600;
+          text-align: left;
+        }
+
+        tr:hover td {
+          background: #f8f9fa;
+        }
+      }
+
+      // Inline code or special text
+      code {
+        background: #f8f9fa;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Consolas', monospace;
+        font-size: 0.9rem;
+      }
+
+      // Block quotes (if any)
+      blockquote {
+        border-left: 4px solid #262b40;
+        padding-left: 1rem;
+        margin: 1.5rem 0;
+        color: #6c757d;
+        font-style: italic;
+      }
+
+      // Images
+      img {
+        max-width: 100%;
+        height: auto;
+        margin: 1rem 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      // Links
+      a {
+        color: #0d6efd;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+// Floating Help Button (simplified for navigation)
+.floating-help-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #262b40 0%, #1a1d2e 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  z-index: 1050;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 991px) {
+  .document-view-page {
+    .toc-card {
+      position: relative !important;
+      top: 0 !important;
+      margin-bottom: 1rem;
+
+      .toc-nav {
+        max-height: 200px;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .floating-help-button {
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .ai-chat-page {
+    .message {
+      max-width: 90%;
+    }
+  }
+}

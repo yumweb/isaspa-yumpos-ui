@@ -1,0 +1,114 @@
+// =========================================================
+// * Volt React Dashboard
+// =========================================================
+
+// * Product Page: https://themesberg.com/product/dashboard/volt-react
+// * Copyright 2021 Themesberg (https://www.themesberg.com)
+// * Official Repository: https://github.com/themesberg/volt-react-dashboard
+// * License: MIT License (https://themesberg.com/licensing)
+
+// * Designed and coded by https://themesberg.com
+
+// =========================================================
+
+// * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. Please contact us to request a removal.
+
+// @import url("https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Kanit&display=swap");
+
+// Bootstrap mixins and functions
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/functions";
+
+// Change variables here
+@import "volt/variables";
+
+// Bootstrap
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+// Vendor
+@import "volt/vendor";
+
+// volt mixins & functions
+@import "volt/mixins";
+@import "volt/functions";
+
+// Utilities
+@import "volt/reboot";
+@import "volt/utilities";
+
+// Layout
+@import "volt/layout";
+
+// Components
+@import "volt/components";
+
+// write your custom styles here!
+
+// ── Global table footer (pagination + rows-per-page) ──
+// Targets react-bs-datatable Pagination & PaginationOptions across all pages.
+
+// Force the pagination row to be a single horizontal line
+.datatableWrapper-footer,
+.DatatableWrapper > .row:last-child,
+table + .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+// Rows-per-page: inline label + dropdown
+.pagination-options,
+[class*="PaginationOpt"] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+
+  label {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+  }
+
+  select {
+    width: auto;
+    display: inline-block;
+  }
+}
+
+.page-item .page-link {
+  color: $default;
+  border-color: $gray-400;
+  font-size: 0.875rem;
+  padding: 0.35rem 0.65rem;
+
+  &:hover {
+    background-color: $default;
+    border-color: $default;
+    color: $white;
+  }
+}
+
+.page-item.active .page-link {
+  background-color: $default;
+  border-color: $default;
+  color: $white;
+}
+
+.pagination {
+  margin-bottom: 0;
+}
+
+// ── Consistent button palette ──
+.btn-dark {
+  background-color: $default;
+  border-color: $default;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: darken($default, 6%);
+    border-color: darken($default, 6%);
+  }
+}

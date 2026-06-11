@@ -1,0 +1,10 @@
+/* CSS to hide the time column and header */
+.rbc-time-view {
+  display: flex !important; 
+}
+.rbc-agenda-time-cell {
+  display: none !important; /* Hide the time header */
+}
+.rbc-agenda-table .rbc-header:nth-child(2) {
+  display: none !important; /* Hide the time header */
+}
