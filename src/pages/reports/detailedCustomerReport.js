@@ -276,10 +276,11 @@ const DetailedCustomerReport = ({
     // If data is not fetched, make API call
     try {
       const res = await clientAdapter.getSaleDetails(saleId); // Call your API with saleId
-      // Store the fetched data in state
+      // The /sales/:id/details endpoint returns the sale with a `saleItems`
+      // array (not a pre-shaped `saleDetail`).
       setExpandedData((prevData) => ({
         ...prevData,
-        [saleId]: res.saleDetail,
+        [saleId]: res.saleItems || [],
       }));
 
       // Expand the row after data is fetched
@@ -488,10 +489,18 @@ const DetailedCustomerReport = ({
                                   {/* Check if expanded data exists for the sale_id */}
                                   {expandedData[i.sale_id]?.map((sd, y) => (
                                     <TableRow key={y}>
-                                      <TableCell>{sd?.item_name}</TableCell>
-                                      <TableCell>{sd?.category}</TableCell>
                                       <TableCell>
-                                        {sd?.technician_name.firstName}
+                                        {sd?.item?.name || sd?.item_name}
+                                      </TableCell>
+                                      <TableCell>
+                                        {sd?.item?.category?.name ||
+                                          sd?.category ||
+                                          "—"}
+                                      </TableCell>
+                                      <TableCell>
+                                        {sd?.serviceEmployee?.firstName ||
+                                          sd?.technician_name?.firstName ||
+                                          "N/A"}
                                       </TableCell>
                                       {/* <TableCell>
                                         {Number(sd?.item_unit_price)?.toFixed(
@@ -499,7 +508,10 @@ const DetailedCustomerReport = ({
                                         )}
                                       </TableCell> */}
                                       <TableCell>
-                                        {Number(sd?.quantity_purchased)}
+                                        {Number(
+                                          sd?.quantityPurchased ??
+                                            sd?.quantity_purchased
+                                        )}
                                       </TableCell>
                                       {/* <TableCell>
                                         {Number(sd?.subtotal)?.toFixed(2)}
