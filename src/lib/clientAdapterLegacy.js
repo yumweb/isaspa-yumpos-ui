@@ -1,4 +1,4 @@
-const LEGACY_API = "https://api.yumpos.co/api";
+const LEGACY_API = "https://api.legacy-reports.isaspa.yumpos.co/api";
 // const LEGACY_API = "http://localhost:8085/api";
 
 const getEmployeeSaleCSV = async (fromDate, toDate, employeeId) => {
@@ -136,7 +136,7 @@ const getCustomerSale = async (
   selectedItems,
   page,
   fromDate,
-  toDate
+  toDate,
 ) => {
   const headers = {
     "Content-Type": "application/json",
@@ -173,7 +173,7 @@ const getCustomerSaleCSV = async (
   locations,
   fromDate,
   toDate,
-  selectedItems = [0]
+  selectedItems = [0],
 ) => {
   const headers = {
     "Content-Type": "application/json",
@@ -210,7 +210,7 @@ const getCustomerRetentionReport = async (
   locationId,
   interval,
   filter,
-  page
+  page,
 ) => {
   const headers = {
     "Content-Type": "application/json",
@@ -244,7 +244,7 @@ const getCustomerEventReport = async (
   day,
   month,
   event /* 1 - Birthday; 2 Anniversary */,
-  page
+  page,
 ) => {
   const headers = {
     "Content-Type": "application/json",
