@@ -263,16 +263,17 @@ export default (props = {}) => {
                 <NavItem
                   title={
                     <>
-                      Google My Business{" "}
-                      <Badge
-                        pill
-                        bg="success"
-                        text="light"
-                        className="badge-md new-badge ms-2"
-                        style={{ marginLeft: "0 !important" }}
-                      >
-                        Premium
-                      </Badge>
+                      Google My Business
+                      <span style={{ display: "block", marginTop: 2 }}>
+                        <Badge
+                          pill
+                          bg="success"
+                          text="light"
+                          className="badge-md new-badge"
+                        >
+                          Premium
+                        </Badge>
+                      </span>
                     </>
                   }
                   icon={faGoogle}
