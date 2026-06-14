@@ -27,7 +27,7 @@ import {
   faBook,
   faBullhorn,
 } from "@fortawesome/free-solid-svg-icons";
-import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { faWhatsapp, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { AppRoutes } from "../routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComments } from "@fortawesome/free-regular-svg-icons";
@@ -258,6 +258,26 @@ export default (props = {}) => {
                     link={AppRoutes.WhatsAppChat.path}
                   />
                 </>
+              )}
+              {userInfo.isGmbEnabled && (
+                <NavItem
+                  title={
+                    <>
+                      Google My Business{" "}
+                      <Badge
+                        pill
+                        bg="success"
+                        text="light"
+                        className="badge-md new-badge ms-2"
+                        style={{ marginLeft: "0 !important" }}
+                      >
+                        Premium
+                      </Badge>
+                    </>
+                  }
+                  icon={faGoogle}
+                  link={AppRoutes.GoogleMyBusiness.path}
+                />
               )}
               <NavItem
                 //external

@@ -84,6 +84,10 @@ export const AppRoutes = {
   WhatsAppCampaignView: { path: "/whatsapp/campaigns/view/:campaignId" },
   WhatsAppChat: { path: "/whatsapp/chat" },
 
+  // Google My Business
+  GoogleMyBusiness: { path: "/google-my-business" },
+  GmbCallback: { path: "/gmb/callback" },
+
   // Help & Best Practices
   AIChat: { path: "/ai-chat" },
   BestPractices: { path: "/best-practices" },

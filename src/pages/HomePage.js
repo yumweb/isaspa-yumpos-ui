@@ -119,6 +119,8 @@ import WhatsAppCampaigns from "./whatsapp/WhatsAppCampaigns";
 import WhatsAppCampaignForm from "./whatsapp/WhatsAppCampaignForm";
 import WhatsAppCampaignView from "./whatsapp/WhatsAppCampaignView";
 import WhatsAppChat from "./whatsapp/WhatsAppChat";
+import GoogleMyBusiness from "./gmb/GoogleMyBusiness";
+import GmbCallback from "./gmb/GmbCallback";
 
 const RouteWithLoader = ({ children }) => {
   const [loaded, setLoaded] = useState(false);
@@ -919,6 +921,26 @@ export default () => (
       element={
         <RouteWithSidebar>
           <BootstrapTables />
+        </RouteWithSidebar>
+      }
+    />
+
+    {/* Google My Business */}
+    <Route
+      exact
+      path={AppRoutes.GoogleMyBusiness.path}
+      element={
+        <RouteWithSidebar>
+          <GoogleMyBusiness />
+        </RouteWithSidebar>
+      }
+    />
+    <Route
+      exact
+      path={AppRoutes.GmbCallback.path}
+      element={
+        <RouteWithSidebar>
+          <GmbCallback />
         </RouteWithSidebar>
       }
     />

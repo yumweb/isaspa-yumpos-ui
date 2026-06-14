@@ -1430,7 +1430,186 @@ const archiveWhatsappChatConversation = async (locationId, conversationId) => {
   return response.json();
 };
 
+// ----- Google My Business (GMB) -----
+const getGmbAuthUrl = async (locationId) => {
+  const response = await apiClient.get(`/gmb/${locationId}/auth-url`);
+  return response.json();
+};
+
+const connectGmb = async (locationId, code) => {
+  const response = await apiClient.post(`/gmb/${locationId}/connect`, { code });
+  return response.json();
+};
+
+const getGmbConnectionStatus = async (locationId) => {
+  const response = await apiClient.get(`/gmb/${locationId}/status`);
+  return response.json();
+};
+
+const getGmbAccounts = async (locationId) => {
+  const response = await apiClient.get(`/gmb/${locationId}/accounts`);
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data?.message || "Failed to load Google accounts");
+  }
+  return data;
+};
+
+const getGmbAccountLocations = async (locationId, accountId) => {
+  const response = await apiClient.get(
+    `/gmb/${locationId}/accounts/${accountId}/locations`
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data?.message || "Failed to load Google locations");
+  }
+  return data;
+};
+
+const mapGmbLocation = async (locationId, body) => {
+  const response = await apiClient.post(`/gmb/${locationId}/map`, body);
+  return response.json();
+};
+
+const getGmbMapping = async (locationId) => {
+  const response = await apiClient.get(`/gmb/${locationId}`);
+  return response.json();
+};
+
+const disconnectGmbLocation = async (locationId) => {
+  const response = await apiClient.delete(`/gmb/${locationId}/map`);
+  return response.json();
+};
+
+const logoutGmbAccount = async (locationId) => {
+  const response = await apiClient.delete(`/gmb/${locationId}/account`);
+  return response.json();
+};
+
+const getGmbReviews = async (locationId, page = 1, limit = 20) => {
+  const response = await apiClient.get(
+    `/gmb/${locationId}/reviews?page=${page}&limit=${limit}`
+  );
+  return response.json();
+};
+
+const syncGmbReviews = async (locationId) => {
+  const response = await apiClient.post(`/gmb/${locationId}/reviews/sync`);
+  return response.json();
+};
+
+const replyGmbReview = async (locationId, reviewId, comment) => {
+  const response = await apiClient.put(
+    `/gmb/${locationId}/reviews/${reviewId}/reply`,
+    { comment }
+  );
+  return response.json();
+};
+
+const deleteGmbReply = async (locationId, reviewId) => {
+  const response = await apiClient.delete(
+    `/gmb/${locationId}/reviews/${reviewId}/reply`
+  );
+  return response.json();
+};
+
+const aiReplyGmbReview = async (locationId, reviewId) => {
+  const response = await apiClient.post(
+    `/gmb/${locationId}/reviews/${reviewId}/ai-reply`
+  );
+  // AI generation (OpenRouter) can fail intermittently -> backend returns 5xx.
+  // Surface that as a thrown error so callers show an error toast.
+  if (!response.ok) throw new Error("AI reply generation failed");
+  return response.json();
+};
+
+const bulkAiReplyGmb = async (locationId) => {
+  const response = await apiClient.post(
+    `/gmb/${locationId}/reviews/bulk-ai-reply`
+  );
+  if (!response.ok) throw new Error("Bulk AI reply failed to start");
+  return response.json();
+};
+
+const getGmbPerformance = async (locationId, metric, start, end) => {
+  const response = await apiClient.get(
+    `/gmb/${locationId}/performance?metric=${metric}&start=${start}&end=${end}`
+  );
+  return response.json();
+};
+
+const getGmbPosts = async (locationId) => {
+  const response = await apiClient.get(`/gmb/${locationId}/posts`);
+  return response.json();
+};
+
+const createGmbPost = async (locationId, body) => {
+  const response = await apiClient.post(`/gmb/${locationId}/posts`, body);
+  return response.json();
+};
+
+const deleteGmbPost = async (locationId, name) => {
+  const response = await apiClient.delete(
+    `/gmb/${locationId}/posts?name=${encodeURIComponent(name)}`
+  );
+  return response.json();
+};
+
+const getGmbMedia = async (locationId) => {
+  const response = await apiClient.get(`/gmb/${locationId}/media`);
+  return response.json();
+};
+
+const createGmbMedia = async (locationId, body) => {
+  const response = await apiClient.post(`/gmb/${locationId}/media`, body);
+  return response.json();
+};
+
+// Uploads an image to DO Spaces via the API and returns { url }. Uses
+// multipart/form-data — let the browser set the Content-Type boundary.
+const uploadGmbImage = async (locationId, file) => {
+  const fd = new FormData();
+  fd.append("file", file);
+  const token = window.localStorage.getItem("yumpos_token");
+  const baseUrl = process.env.REACT_APP_PUBLIC_BASE_URL;
+  const apiKey = process.env.REACT_APP_PUBLIC_API_KEY;
+  const response = await fetch(`${baseUrl}/gmb/${locationId}/upload-image`, {
+    method: "POST",
+    headers: {
+      "x-api-key": apiKey,
+      accept: "application/json",
+      authorization: `Bearer ${token}`,
+    },
+    body: fd,
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data?.message || "Image upload failed");
+  return data;
+};
+
 export default {
+  getGmbAuthUrl,
+  connectGmb,
+  getGmbConnectionStatus,
+  getGmbAccounts,
+  getGmbAccountLocations,
+  mapGmbLocation,
+  getGmbMapping,
+  disconnectGmbLocation,
+  logoutGmbAccount,
+  getGmbReviews,
+  syncGmbReviews,
+  replyGmbReview,
+  deleteGmbReply,
+  aiReplyGmbReview,
+  bulkAiReplyGmb,
+  getGmbPerformance,
+  getGmbPosts,
+  createGmbPost,
+  deleteGmbPost,
+  getGmbMedia,
+  createGmbMedia,
+  uploadGmbImage,
   getSaleDetails,
   getSalesReportDetailed,
   getCustomerRetentionReports,
