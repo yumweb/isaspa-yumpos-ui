@@ -667,7 +667,7 @@ const FamilyCardView = ({ onClickBack, familyCard }) => {
                       }}
                       key={x}
                       dangerouslySetInnerHTML={{
-                        __html: `${moment(message.logDate).format("DD/MM/YYYY, hh:mm a")} - ${message.logMessage.replace(/studio11\.yumpos\.co\/sales\/receipt\/(\d+)/g, `b.isaspa.co/print/${familyCard.editItem.locationId}/$1`)}`
+                        __html: `${moment(message.logDate).format("DD/MM/YYYY, hh:mm a")} - ${message.logMessage.replace(/studio11\.yumpos\.co\/sales\/receipt\/(\d+)/g, `b.isaspa.in/print/${familyCard.editItem.locationId}/$1`)}`
                       }}
                     />
                   ))}
