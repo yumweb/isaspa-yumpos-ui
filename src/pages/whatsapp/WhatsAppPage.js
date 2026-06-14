@@ -35,6 +35,7 @@ import PendingIcon from "@mui/icons-material/Pending";
 import CancelIcon from "@mui/icons-material/Cancel";
 import WhatsAppSetup from "../location/WhatsAppSetup";
 import clientAdapter from "../../lib/clientAdapter";
+import { getFeatureAccess } from "../../lib/featureAccess";
 
 function WhatsAppTemplates({ locationId, onCreateClick }) {
   const navigate = useNavigate();
@@ -855,14 +856,20 @@ export default function WhatsAppPage() {
     navigate("/whatsapp/templates/create");
   };
 
-  // Check if WhatsApp feature is enabled for this location
-  if (!userInfo.isWhatsappEnabled) {
+  // Gate the premium feature by enabled flag + expiry (corporate bypasses).
+  const waAccess = getFeatureAccess(userInfo, "whatsapp");
+  if (!waAccess.active) {
     return (
       <Container className="px-0" fluid>
         <Box p={3}>
           <Alert severity="warning">
-            WhatsApp Business is not enabled for this location. Please contact
-            your administrator to enable this premium feature.
+            {waAccess.expired
+              ? `Your WhatsApp subscription expired${
+                  waAccess.expiry
+                    ? " on " + new Date(waAccess.expiry).toLocaleDateString()
+                    : ""
+                }. Please contact your administrator to renew this premium feature.`
+              : "WhatsApp Business is not enabled for this location. Please contact your administrator to enable this premium feature."}
           </Alert>
         </Box>
       </Container>

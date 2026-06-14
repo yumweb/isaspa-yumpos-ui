@@ -23,6 +23,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip as RechartsTooltip } from "recharts";
 import clientAdapter from "../../lib/clientAdapter";
+import { getFeatureAccess } from "../../lib/featureAccess";
 
 const STATUS_COLORS = {
   draft: "default",
@@ -254,13 +255,20 @@ export default function WhatsAppCampaignView() {
     }
   };
 
-  // Check if WhatsApp is enabled
-  if (!userInfo.isWhatsappEnabled) {
+  // Gate the premium feature by enabled flag + expiry (corporate bypasses).
+  const waAccess = getFeatureAccess(userInfo, "whatsapp");
+  if (!waAccess.active) {
     return (
       <Container className="px-0" fluid>
         <Box p={3}>
           <Alert severity="warning">
-            WhatsApp Business is not enabled for this location.
+            {waAccess.expired
+              ? `Your WhatsApp subscription expired${
+                  waAccess.expiry
+                    ? " on " + new Date(waAccess.expiry).toLocaleDateString()
+                    : ""
+                }. Please contact your administrator to renew.`
+              : "WhatsApp Business is not enabled for this location."}
           </Alert>
         </Box>
       </Container>

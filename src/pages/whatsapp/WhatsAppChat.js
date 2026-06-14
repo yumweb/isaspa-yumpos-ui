@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import {
   Box,
+  Alert,
   Typography,
   TextField,
   InputAdornment,
@@ -40,6 +41,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ErrorIcon from "@mui/icons-material/Error";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import clientAdapter from "../../lib/clientAdapter";
+import { getFeatureAccess, getUserInfo } from "../../lib/featureAccess";
 
 const formatRelativeTime = (date) => {
   if (!date) return "";
@@ -511,6 +513,24 @@ export default function WhatsAppChat() {
     groups[date].push(message);
     return groups;
   }, {});
+
+  // Gate the premium feature by enabled flag + expiry (corporate bypasses).
+  const waAccess = getFeatureAccess(getUserInfo(), "whatsapp");
+  if (!waAccess.active) {
+    return (
+      <Box p={3}>
+        <Alert severity="warning">
+          {waAccess.expired
+            ? `Your WhatsApp subscription expired${
+                waAccess.expiry
+                  ? " on " + new Date(waAccess.expiry).toLocaleDateString()
+                  : ""
+              }. Please contact your administrator to renew.`
+            : "WhatsApp Business is not enabled for this location."}
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box

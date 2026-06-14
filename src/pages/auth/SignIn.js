@@ -56,6 +56,8 @@ const SignIn = () => {
         "yumpos_user_info",
         JSON.stringify(res.userInfo)
       );
+      // Reset the launch announcement so it shows once on this fresh login.
+      window.localStorage.removeItem("yumpos_announcement_seen");
       window.location.href = "dashboard";
     } else {
       setError("Some error occurred. Please try again later.");

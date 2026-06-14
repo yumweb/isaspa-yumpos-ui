@@ -16,6 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import clientAdapter from "../../lib/clientAdapter";
+import { getFeatureAccess } from "../../lib/featureAccess";
 
 const STATUS_COLORS = {
   draft: "default",
@@ -153,13 +154,20 @@ export default function WhatsAppCampaigns() {
     });
   };
 
-  // Check if WhatsApp is enabled
-  if (!userInfo.isWhatsappEnabled) {
+  // Gate the premium feature by enabled flag + expiry (corporate bypasses).
+  const waAccess = getFeatureAccess(userInfo, "whatsapp");
+  if (!waAccess.active) {
     return (
       <Container className="px-0" fluid>
         <Box p={3}>
           <Alert severity="warning">
-            WhatsApp Business is not enabled for this location.
+            {waAccess.expired
+              ? `Your WhatsApp subscription expired${
+                  waAccess.expiry
+                    ? " on " + new Date(waAccess.expiry).toLocaleDateString()
+                    : ""
+                }. Please contact your administrator to renew.`
+              : "WhatsApp Business is not enabled for this location."}
           </Alert>
         </Box>
       </Container>

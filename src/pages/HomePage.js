@@ -86,6 +86,7 @@ import RetailProduct from "./items/RetailProduct";
 import Receipt from "./components/sale/Receipt";
 import { AppRoutes } from "../routes";
 import PrivateRoute from "./components/PrivateRoute";
+import AnnouncementModal from "../components/AnnouncementModal";
 import ResetPasswordNotify from "./examples/ResetPasswordNotify";
 import PublicReceipt from "./components/sale/publicReceipts";
 import Recievings from "./recievings/recieving";
@@ -224,6 +225,7 @@ const RouteWithSidebar = ({ children }) => {
 
         <main className="content">
           <Navbar />
+          <AnnouncementModal />
           {children}
           <Footer toggleSettings={toggleSettings} showSettings={showSettings} />
           <ToastContainer

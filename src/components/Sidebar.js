@@ -29,6 +29,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { AppRoutes } from "../routes";
+import { getFeatureAccess } from "../lib/featureAccess";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComments } from "@fortawesome/free-regular-svg-icons";
 import { faServicestack } from "@fortawesome/free-brands-svg-icons";
@@ -44,6 +45,14 @@ export default (props = {}) => {
   const showClass = show ? "show" : "";
   const onCollapse = () => setShow(!show);
   const userInfo = JSON.parse(localStorage.getItem("yumpos_user_info"));
+
+  // Premium add-on visibility: show the nav when the feature is enabled OR the
+  // user is corporate (kept visible even if expired so they can reach the
+  // renew/expired screen). Expiry itself is enforced on each feature page.
+  const waAccess = getFeatureAccess(userInfo, "whatsapp");
+  const gmbAccess = getFeatureAccess(userInfo, "gmb");
+  const showWhatsapp = waAccess.enabled || waAccess.isCorporate;
+  const showGmb = gmbAccess.enabled || gmbAccess.isCorporate;
 
   const logout = () => {
     window.localStorage.removeItem("yumpos_token");
@@ -227,7 +236,7 @@ export default (props = {}) => {
                 icon={faBook}
                 link={AppRoutes.BestPractices.path}
               /> */}
-              {userInfo.isWhatsappEnabled && (
+              {showWhatsapp && (
                 <>
                   <NavItem
                     title={
@@ -259,7 +268,7 @@ export default (props = {}) => {
                   />
                 </>
               )}
-              {userInfo.isGmbEnabled && (
+              {showGmb && (
                 <NavItem
                   title={
                     <>
