@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import moment from "moment";
 import {
   DatatableWrapper,
   Filter,
@@ -36,6 +37,7 @@ const FamilyCard = () => {
     { title: "Description", prop: "location" },
     { title: "Customer Name", prop: "firstName" },
     { title: "Active/Inactive", prop: "inactive" },
+    { title: "Date Created", prop: "createdDate" },
     { title: "Edit", prop: "edit" },
   ];
 
@@ -55,6 +57,9 @@ const FamilyCard = () => {
       f.description = `${f.description}`;
       f.firstName = f.person ? f.person.firstName : "NA";
       f.inactive = f.inactive ? "Inactive" : "Active";
+      f.createdDate = f.createdDate
+        ? moment(f.createdDate).format("DD/MM/YYYY")
+        : "-";
       f.edit = (
         <div
           onClick={() => {
