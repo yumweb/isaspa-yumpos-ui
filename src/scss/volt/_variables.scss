@@ -69,12 +69,13 @@ $colors: (
 // scss-docs-end colors-map
 
 // Color scheme
-$default:       #262B40;
-$primary:       #3f1647;
+// Isa Spa brand palette (from isaspa.in): espresso + gold + tan on cream.
+$default:       #2A211A;   // deep espresso (dark UI surfaces)
+$primary:       #3F3B30;   // espresso — sidebar bg, primary buttons, headings
 
-$secondary:     #61DAFB;
-$tertiary:      #1B998B;
-$quaternary:    #C96480;
+$secondary:     #B0863A;   // signature gold — accents, highlights, badges
+$tertiary:      #C7B89D;   // warm tan/beige
+$quaternary:    #9A8C6E;   // muted taupe
 
 // Series names and colors. This can be extended or customized as desired. Just add more series and colors.
 $ct-series-names: (a, b, c, d, e, f, g) !default;
@@ -370,7 +371,7 @@ $negative-spacers: if($enable-negative-margins, negativify-map($spacers), null);
 //
 // Settings for the `<body>` element.
 
-$body-bg:                   $soft;
+$body-bg:                   #FAF7F1;   // soft cream (Isa Spa)
 $body-color:                $gray-900;
 $body-text-align:           null;
 
@@ -379,7 +380,7 @@ $body-text-align:           null;
 //
 // Style anchor elements.
 
-$link-color:                              $primary;
+$link-color:                              #8C6A2E;
 $link-decoration:                         none;
 $link-hover-color:                        darken($link-color, 15%);
 $link-hover-decoration:                   null;

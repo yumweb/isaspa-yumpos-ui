@@ -112,3 +112,18 @@ table + .row {
     border-color: darken($default, 6%);
   }
 }
+
+// ── Isa Spa brand accents ──────────────────────────────────────────────
+// Espresso sidebar ($primary) with a gold ($secondary) highlight on the
+// active/hover menu item, so selections read clearly on the dark surface.
+.sidebar {
+  .nav-link.active,
+  .nav-item.active > .nav-link {
+    background-color: rgba($secondary, 0.18);
+    box-shadow: inset 3px 0 0 $secondary;
+    color: $white;
+  }
+  .nav-link:hover {
+    color: lighten($secondary, 12%);
+  }
+}
