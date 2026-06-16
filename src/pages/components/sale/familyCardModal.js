@@ -225,7 +225,7 @@ const FamilyCardModal = ({
                 width: "100%",
               }}
             >
-              Familycard <br /> Balance :
+              Balance <br /> (Minutes) :
               <Input
                 disableUnderline={true}
                 required
@@ -240,7 +240,7 @@ const FamilyCardModal = ({
                 }}
                 value={balance}
                 onChange={(e) => setBalance(e.target.value)}
-                placeholder="Amount in numbers only"
+                placeholder="Time balance in minutes"
               ></Input>
             </InputLabel>
           </FormGroup>
@@ -262,7 +262,7 @@ const FamilyCardModal = ({
                 width: "100%",
               }}
             >
-              Familycard <br /> Value :
+              Value <br /> (Rs.) :
               <Input
                 disableUnderline={true}
                 required
@@ -277,6 +277,7 @@ const FamilyCardModal = ({
                 }}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
+                placeholder="Amount paid in Rs."
               ></Input>
             </InputLabel>
           </FormGroup>

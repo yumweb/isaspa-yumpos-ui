@@ -345,7 +345,20 @@ const Sales = () => {
       return setSnackBar({
         open: true,
         severity: "error",
-        message: `Please enter Family Card details`,
+        message: `Please enter the Family Card value (Rs.)`,
+      });
+    }
+    // Every Isa Spa family card is time-based: `value` is the monetary amount
+    // paid (Rs.) and the balance is tracked in minutes. For predefined Time
+    // Packages the minutes come from the package; for Custom packages they come
+    // from the Balance (minutes) field.
+    const minutes =
+      description === "time" ? Number(serviceTime) : Number(options.balance);
+    if (!minutes) {
+      return setSnackBar({
+        open: true,
+        severity: "error",
+        message: `Please enter the time balance (minutes)`,
       });
     }
     setSnackBar({
@@ -353,19 +366,17 @@ const Sales = () => {
       severity: "success",
       message: `Successfully created familycards`,
     });
-    const isTimeBasedCard = description === "time" || Number(serviceTime) > 0;
     const cartitem = {
       itemId: 2909,
-      // monetary card -> balance (incl. bonus); time card -> price paid
-      value: isTimeBasedCard ? Number(options.value) : Number(options.balance),
+      value: Number(options.value), // monetary amount paid (Rs.)
       type: "familyCard",
       familyCardNumber: options.familycardNumber,
       costPrice: Number(options.value),
       unitPrice: Number(options.value),
       description: options.familycardNumber,
       validityDate: validityDate,
-      isTimeBased: isTimeBasedCard ? 1 : 0,
-      serviceTime: isTimeBasedCard ? Number(serviceTime) : null,
+      isTimeBased: 1, // all family cards are time-based
+      serviceTime: minutes, // balance in minutes
     };
     addItemToCart(cartitem);
     setFamCard(false);
