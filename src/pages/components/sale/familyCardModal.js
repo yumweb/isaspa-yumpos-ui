@@ -105,7 +105,6 @@ const FamilyCardModal = ({
             <MenuItem selected value="package">
               Select Package Type
             </MenuItem>
-            <MenuItem value="default">Default Package</MenuItem>
             <MenuItem value="time">Time Package (minutes)</MenuItem>
             <MenuItem value="custom">Custom Package</MenuItem>
           </Select>
@@ -187,7 +186,8 @@ const FamilyCardModal = ({
             >
               {familyCardTimePackage?.map((f, x) => (
                 <MenuItem key={x} value={f.value}>
-                  {f.name}
+                  {f.name} (Rs. {f.value}/-) | Service Time: {f.serviceTime / 60}{" "}
+                  Hours | Validity {f.expiry} Months
                 </MenuItem>
               ))}
             </Select>
