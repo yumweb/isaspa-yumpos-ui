@@ -90,24 +90,22 @@ const FamilyCardModal = ({
           }}
         >
           Package Type :
-          <Select
+          <select
             value={description}
-            IconComponent={false}
-            variant="standard"
-            disableUnderline={true}
             onChange={handleSelect}
             style={{
               width: "80%",
               border: "1px solid Gray",
               borderRadius: "3px",
+              padding: "6px",
+              backgroundColor: "white",
+              color: "black",
             }}
           >
-            <MenuItem selected value="package">
-              Select Package Type
-            </MenuItem>
-            <MenuItem value="time">Time Package (minutes)</MenuItem>
-            <MenuItem value="custom">Custom Package</MenuItem>
-          </Select>
+            <option value="">Select Package Type</option>
+            <option value="time">Time Package (minutes)</option>
+            <option value="custom">Custom Package</option>
+          </select>
         </InputLabel>
       </FormGroup>
       {description === "default" && (
@@ -172,25 +170,26 @@ const FamilyCardModal = ({
             }}
           >
             Time Package :
-            <Select
+            <select
               value={value}
-              IconComponent={false}
-              variant="standard"
-              disableUnderline={true}
+              onChange={handleTimePackage}
               style={{
                 width: "80%",
                 border: "1px solid Gray",
                 borderRadius: "3px",
+                padding: "6px",
+                backgroundColor: "white",
+                color: "black",
               }}
-              onChange={handleTimePackage}
             >
+              <option value="">Select Package</option>
               {familyCardTimePackage?.map((f, x) => (
-                <MenuItem key={x} value={f.value}>
+                <option key={x} value={f.value}>
                   {f.name} (Rs. {f.value}/-) | Service Time: {f.serviceTime / 60}{" "}
                   Hours | Validity {f.expiry} Months
-                </MenuItem>
+                </option>
               ))}
-            </Select>
+            </select>
           </InputLabel>
           {serviceTime ? (
             <p
