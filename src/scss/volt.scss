@@ -114,10 +114,10 @@ table + .row {
 }
 
 // ── Isa Spa brand accents ──────────────────────────────────────────────
-// Dark espresso-brown sidebar ($default) with a gold ($secondary) highlight
-// on the active/hover menu item, so selections read clearly on the surface.
+// Warm dark-brown sidebar with a gold ($secondary) highlight on the
+// active/hover menu item, so selections read clearly on the surface.
 .sidebar.bg-primary {
-  background-color: $default !important;   // deep brown #2A211A
+  background-color: #30241A !important;   // Isa Spa brown
 }
 .sidebar {
   .nav-link.active,
