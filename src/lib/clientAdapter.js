@@ -1587,7 +1587,34 @@ const uploadGmbImage = async (locationId, file) => {
   return data;
 };
 
+// ----- WhatsApp merge-variable catalog -----
+const getWhatsappVariables = async (activeOnly = false) => {
+  const response = await apiClient.get(
+    `/whatsapp/variables${activeOnly ? "?activeOnly=true" : ""}`
+  );
+  return response.json();
+};
+
+const createWhatsappVariable = async (data) => {
+  const response = await apiClient.post(`/whatsapp/variables`, data);
+  return response.json();
+};
+
+const updateWhatsappVariable = async (id, data) => {
+  const response = await apiClient.put(`/whatsapp/variables/${id}`, data);
+  return response.json();
+};
+
+const deleteWhatsappVariable = async (id) => {
+  const response = await apiClient.delete(`/whatsapp/variables/${id}`);
+  return response.json();
+};
+
 export default {
+  getWhatsappVariables,
+  createWhatsappVariable,
+  updateWhatsappVariable,
+  deleteWhatsappVariable,
   getGmbAuthUrl,
   connectGmb,
   getGmbConnectionStatus,

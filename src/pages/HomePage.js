@@ -120,6 +120,7 @@ import WhatsAppCampaigns from "./whatsapp/WhatsAppCampaigns";
 import WhatsAppCampaignForm from "./whatsapp/WhatsAppCampaignForm";
 import WhatsAppCampaignView from "./whatsapp/WhatsAppCampaignView";
 import WhatsAppChat from "./whatsapp/WhatsAppChat";
+import WhatsAppVariables from "./whatsapp/WhatsAppVariables";
 import GoogleMyBusiness from "./gmb/GoogleMyBusiness";
 import GmbCallback from "./gmb/GmbCallback";
 
@@ -1018,6 +1019,15 @@ export default () => (
         <RouteWithSidebarNoFooter>
           <WhatsAppChat />
         </RouteWithSidebarNoFooter>
+      }
+    />
+    <Route
+      exact
+      path={AppRoutes.WhatsAppVariables.path}
+      element={
+        <RouteWithSidebar>
+          <WhatsAppVariables />
+        </RouteWithSidebar>
       }
     />
 

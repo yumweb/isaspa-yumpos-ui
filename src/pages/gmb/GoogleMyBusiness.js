@@ -29,6 +29,7 @@ import {
 import LinkOffIcon from "@mui/icons-material/LinkOff";
 import ImageIcon from "@mui/icons-material/Image";
 import CloseIcon from "@mui/icons-material/Close";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import GoogleIcon from "@mui/icons-material/Google";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
@@ -939,8 +940,23 @@ const PostsTab = ({ locationId, notify }) => {
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState("");
   const [postImage, setPostImage] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [photoFile, setPhotoFile] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  // Local object URL for the selected image, used in the preview.
+  useEffect(() => {
+    if (!postImage) {
+      setImagePreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(postImage);
+    setImagePreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [postImage]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -968,19 +984,38 @@ const PostsTab = ({ locationId, notify }) => {
     try {
       const body = { languageCode: "en", summary, topicType: "STANDARD" };
       if (postImage) {
-        // Upload to DO Spaces first; Google fetches the post image from this URL.
+        // Upload to DO Spaces first; Google fetches the post media from this URL.
         const { url } = await clientAdapter.uploadGmbImage(locationId, postImage);
-        body.media = [{ mediaFormat: "PHOTO", sourceUrl: url }];
+        const isVideo = (postImage.type || "").startsWith("video/");
+        body.media = [
+          { mediaFormat: isVideo ? "VIDEO" : "PHOTO", sourceUrl: url },
+        ];
       }
       await clientAdapter.createGmbPost(locationId, body);
       setSummary("");
       setPostImage(null);
+      setPreviewOpen(false);
       notify("Post published");
       await load();
     } catch (e) {
       notify(e?.message || "Failed to publish post", "error");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const doDeletePost = async () => {
+    if (!postToDelete) return;
+    setDeleting(true);
+    try {
+      await clientAdapter.deleteGmbPost(locationId, postToDelete.name);
+      setPostToDelete(null);
+      notify("Post deleted");
+      await load();
+    } catch (e) {
+      notify(e?.message || "Failed to delete post", "error");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -1024,10 +1059,10 @@ const PostsTab = ({ locationId, notify }) => {
           <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
             <Button
               variant="contained"
-              onClick={createPost}
+              onClick={() => setPreviewOpen(true)}
               disabled={saving || !summary.trim()}
             >
-              {saving ? "Publishing…" : "Publish post"}
+              Preview &amp; publish
             </Button>
             <Button
               component="label"
@@ -1035,11 +1070,11 @@ const PostsTab = ({ locationId, notify }) => {
               startIcon={<ImageIcon />}
               disabled={saving}
             >
-              {postImage ? "Change image" : "Add image"}
+              {postImage ? "Change media" : "Add image / video"}
               <input
                 hidden
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
                 onChange={(e) => setPostImage(e.target.files?.[0] || null)}
               />
             </Button>
@@ -1121,10 +1156,27 @@ const PostsTab = ({ locationId, notify }) => {
             {posts.map((p) => (
               <Card key={p.name} variant="outlined">
                 <CardContent sx={{ py: 1.5 }}>
-                  <Typography variant="body2">{p.summary}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {p.state} · {p.createTime}
-                  </Typography>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    spacing={1}
+                  >
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="body2">{p.summary}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {p.state} · {p.createTime}
+                      </Typography>
+                    </Box>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      aria-label="delete post"
+                      onClick={() => setPostToDelete(p)}
+                    >
+                      <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                  </Stack>
                 </CardContent>
               </Card>
             ))}
@@ -1145,6 +1197,98 @@ const PostsTab = ({ locationId, notify }) => {
           </Box>
         </>
       )}
+
+      {/* Preview before publishing */}
+      <Dialog
+        open={previewOpen}
+        onClose={() => !saving && setPreviewOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Preview post</DialogTitle>
+        <DialogContent>
+          <Card variant="outlined">
+            {imagePreviewUrl &&
+              ((postImage?.type || "").startsWith("video/") ? (
+                <Box
+                  component="video"
+                  src={imagePreviewUrl}
+                  controls
+                  sx={{
+                    width: "100%",
+                    maxHeight: 260,
+                    objectFit: "contain",
+                    display: "block",
+                    backgroundColor: "#000",
+                  }}
+                />
+              ) : (
+                <Box
+                  component="img"
+                  src={imagePreviewUrl}
+                  alt="post"
+                  sx={{
+                    width: "100%",
+                    maxHeight: 260,
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
+              ))}
+            <CardContent>
+              <Typography
+                variant="body2"
+                sx={{ whiteSpace: "pre-wrap" }}
+              >
+                {summary}
+              </Typography>
+            </CardContent>
+          </Card>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: "block", mt: 1 }}
+          >
+            This is how your Google post will appear. Publishing sends it live to
+            your Google Business Profile.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPreviewOpen(false)} disabled={saving}>
+            Edit
+          </Button>
+          <Button variant="contained" onClick={createPost} disabled={saving}>
+            {saving ? "Publishing…" : "Publish"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete a post */}
+      <Dialog
+        open={!!postToDelete}
+        onClose={() => !deleting && setPostToDelete(null)}
+      >
+        <DialogTitle>Delete this post?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            This permanently removes the post from your Google Business Profile.
+            {postToDelete?.summary ? ` "${postToDelete.summary.slice(0, 120)}"` : ""}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPostToDelete(null)} disabled={deleting}>
+            Cancel
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={doDeletePost}
+            disabled={deleting}
+          >
+            {deleting ? "Deleting…" : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

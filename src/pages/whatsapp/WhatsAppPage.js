@@ -267,6 +267,12 @@ function WhatsAppTemplates({ locationId, onCreateClick }) {
                 <TableCell align="left">
                   <strong>Quality</strong>
                 </TableCell>
+                <TableCell align="right">
+                  <strong>Sent</strong>
+                </TableCell>
+                <TableCell align="right">
+                  <strong>Delivered</strong>
+                </TableCell>
                 <TableCell sx={{ width: 100 }} align="left">
                   <strong>Actions</strong>
                 </TableCell>
@@ -307,6 +313,10 @@ function WhatsAppTemplates({ locationId, onCreateClick }) {
                       />
                     </TableCell>
                     <TableCell>{renderQualityChip(template.quality_score)}</TableCell>
+                    <TableCell align="right">{template.sent_total ?? 0}</TableCell>
+                    <TableCell align="right">
+                      {template.delivered_total ?? 0}
+                    </TableCell>
                     <TableCell>
                       <Box display="flex" gap={0.5}>
                         <Tooltip title="Edit">
@@ -332,7 +342,7 @@ function WhatsAppTemplates({ locationId, onCreateClick }) {
                   </TableRow>
                   <TableRow>
                     <TableCell
-                      colSpan={7}
+                      colSpan={9}
                       sx={{
                         py: 0,
                         borderBottom: expandedRows[index] ? undefined : "none",

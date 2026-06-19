@@ -5,7 +5,7 @@ import {
   Box, Typography, Alert, TextField, Button, FormControl, InputLabel,
   Select, MenuItem, IconButton, Collapse, Divider, Chip, CircularProgress,
   Dialog, DialogTitle, DialogContent, DialogActions, FormHelperText,
-  Grid, Paper, Tooltip
+  Grid, Paper, Tooltip, Menu
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
@@ -307,6 +307,8 @@ export default function TemplateBuilder() {
   // Body
   const [bodyText, setBodyText] = useState("");
   const [bodyExamples, setBodyExamples] = useState([]);
+  const [variableCatalog, setVariableCatalog] = useState([]);
+  const [varMenuAnchor, setVarMenuAnchor] = useState(null);
 
   // Footer
   const [footerEnabled, setFooterEnabled] = useState(false);
@@ -635,6 +637,17 @@ export default function TemplateBuilder() {
     }
   };
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const vars = await clientAdapter.getWhatsappVariables(true);
+        setVariableCatalog(Array.isArray(vars) ? vars : []);
+      } catch {
+        setVariableCatalog([]);
+      }
+    })();
+  }, []);
+
   const insertVariable = (setter, currentValue, textFieldId) => {
     const textField = document.getElementById(textFieldId);
     if (!textField) return;
@@ -650,6 +663,28 @@ export default function TemplateBuilder() {
       `{{${nextNum}}}` +
       currentValue.slice(cursorPos);
     setter(newValue);
+  };
+
+  // Insert the next {{N}} into the body. If a catalog variable is chosen, also
+  // pre-fill that variable's sample as the Meta example for the new position.
+  const insertBodyVariable = (catalogVar) => {
+    setVarMenuAnchor(null);
+    const textField = document.getElementById("body-text");
+    const existingVars = bodyText.match(/\{\{(\d+)\}\}/g) || [];
+    const nums = existingVars.map((v) => parseInt(v.match(/\d+/)[0]));
+    const nextNum = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+    const cursorPos = textField?.selectionStart ?? bodyText.length;
+    setBodyText(
+      bodyText.slice(0, cursorPos) + `{{${nextNum}}}` + bodyText.slice(cursorPos)
+    );
+    if (catalogVar) {
+      setBodyExamples((prev) => {
+        const updated = [...prev];
+        while (updated.length < nextNum) updated.push("");
+        updated[nextNum - 1] = catalogVar.sample || catalogVar.label;
+        return updated;
+      });
+    }
   };
 
   const addButton = (type) => {
@@ -986,11 +1021,27 @@ export default function TemplateBuilder() {
                   <Button
                     variant="outlined"
                     size="small"
-                    onClick={() => insertVariable(setBodyText, bodyText, "body-text")}
+                    onClick={(e) => setVarMenuAnchor(e.currentTarget)}
                     sx={{ mb: 2 }}
                   >
                     Insert Variable {"{{}}"}
                   </Button>
+                  <Menu
+                    anchorEl={varMenuAnchor}
+                    open={Boolean(varMenuAnchor)}
+                    onClose={() => setVarMenuAnchor(null)}
+                  >
+                    {variableCatalog.map((v) => (
+                      <MenuItem key={v.varKey} onClick={() => insertBodyVariable(v)}>
+                        {v.label}
+                        {v.sample ? ` — e.g. ${v.sample}` : ""}
+                      </MenuItem>
+                    ))}
+                    <Divider />
+                    <MenuItem onClick={() => insertBodyVariable(null)}>
+                      Generic variable (fill later)
+                    </MenuItem>
+                  </Menu>
 
                   {bodyVariables.length > 0 && (
                     <>

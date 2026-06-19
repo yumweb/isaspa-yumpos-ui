@@ -50,6 +50,7 @@ export default function WhatsAppCampaignForm() {
   const [templatesLoading, setTemplatesLoading] = useState(true);
   const [audienceCount, setAudienceCount] = useState(null);
   const [audienceLoading, setAudienceLoading] = useState(false);
+  const [variableCatalog, setVariableCatalog] = useState([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -72,6 +73,18 @@ export default function WhatsAppCampaignForm() {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   // Fetch templates on mount
+  useEffect(() => {
+    const fetchVariables = async () => {
+      try {
+        const vars = await clientAdapter.getWhatsappVariables(true);
+        setVariableCatalog(Array.isArray(vars) ? vars : []);
+      } catch {
+        setVariableCatalog([]);
+      }
+    };
+    fetchVariables();
+  }, []);
+
   useEffect(() => {
     const fetchTemplates = async () => {
       setTemplatesLoading(true);
@@ -209,14 +222,16 @@ export default function WhatsAppCampaignForm() {
     });
   };
 
-  const handleVariableChange = (index) => (e) => {
+  const setVariableValue = (index, value) => {
     const newVars = [...(formData.templateVariables.body || [])];
-    newVars[index] = e.target.value;
+    newVars[index] = value;
     setFormData({
       ...formData,
       templateVariables: { ...formData.templateVariables, body: newVars },
     });
   };
+
+  const handleVariableChange = (index) => (e) => setVariableValue(index, e.target.value);
 
   const handleSave = async (startImmediately = false) => {
     if (!formData.name.trim()) {
@@ -296,7 +311,15 @@ export default function WhatsAppCampaignForm() {
     let preview = bodyComponent.text;
     (formData.templateVariables.body || []).forEach((val, idx) => {
       const placeholder = `{{${idx + 1}}}`;
-      const displayVal = val || `[Variable ${idx + 1}]`;
+      // For a catalog token show its sample (what the customer will see); for a
+      // static value show it as-is; otherwise a placeholder hint.
+      const tokenMatch = /^\{\{([a-z0-9_]+)\}\}$/.exec(val || "");
+      const matchedVar = tokenMatch
+        ? variableCatalog.find((v) => v.varKey === tokenMatch[1])
+        : null;
+      const displayVal = matchedVar
+        ? matchedVar.sample || matchedVar.label
+        : val || `[Variable ${idx + 1}]`;
       preview = preview.replace(placeholder, displayVal);
     });
     return preview;
@@ -505,26 +528,60 @@ export default function WhatsAppCampaignForm() {
                     </FormHelperText>
                   </FormControl>
 
-                  {selectedTemplate && (
-                    <Box bgcolor="grey.50" p={2} borderRadius={1}>
-                      <Typography variant="caption" color="text.secondary" display="block" mb={1}>
-                        Template Variables
-                      </Typography>
-                      {(formData.templateVariables.body || []).map((val, idx) => (
-                        <TextField
-                          key={idx}
-                          label={`Variable {{${idx + 1}}}`}
-                          value={val}
-                          onChange={handleVariableChange(idx)}
-                          fullWidth
-                          size="small"
-                          sx={{ mb: 1 }}
-                          placeholder={`e.g., ${idx === 0 ? "{{customer_name}} or custom text" : "Value"}`}
-                          helperText={idx === 0 ? "Use {{customer_name}} or {{first_name}} to personalize" : ""}
-                        />
-                      ))}
-                    </Box>
-                  )}
+                  {selectedTemplate &&
+                    (formData.templateVariables.body || []).length > 0 && (
+                      <Box bgcolor="grey.50" p={2} borderRadius={1}>
+                        <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+                          Map template variables
+                        </Typography>
+                        {(formData.templateVariables.body || []).map((val, idx) => {
+                          const tokenMatch = /^\{\{([a-z0-9_]+)\}\}$/.exec(val || "");
+                          const matchedVar = tokenMatch
+                            ? variableCatalog.find((v) => v.varKey === tokenMatch[1])
+                            : null;
+                          const selectValue = matchedVar ? matchedVar.varKey : "__custom__";
+                          return (
+                            <Box key={idx} display="flex" gap={1} mb={1} alignItems="flex-start">
+                              <FormControl size="small" sx={{ minWidth: 210 }}>
+                                <InputLabel>{`Variable {{${idx + 1}}}`}</InputLabel>
+                                <Select
+                                  label={`Variable {{${idx + 1}}}`}
+                                  value={selectValue}
+                                  onChange={(e) =>
+                                    setVariableValue(
+                                      idx,
+                                      e.target.value === "__custom__"
+                                        ? ""
+                                        : `{{${e.target.value}}}`
+                                    )
+                                  }
+                                >
+                                  {variableCatalog.map((v) => (
+                                    <MenuItem key={v.varKey} value={v.varKey}>
+                                      {v.label}
+                                    </MenuItem>
+                                  ))}
+                                  <MenuItem value="__custom__">Custom text…</MenuItem>
+                                </Select>
+                              </FormControl>
+                              {selectValue === "__custom__" && (
+                                <TextField
+                                  size="small"
+                                  fullWidth
+                                  placeholder="Enter fixed text"
+                                  value={val}
+                                  onChange={handleVariableChange(idx)}
+                                />
+                              )}
+                            </Box>
+                          );
+                        })}
+                        <Typography variant="caption" color="text.secondary" display="block">
+                          Dynamic variables are filled per customer at send time; "Custom
+                          text" sends the same value to everyone.
+                        </Typography>
+                      </Box>
+                    )}
 
                   <Divider sx={{ my: 1 }} />
 

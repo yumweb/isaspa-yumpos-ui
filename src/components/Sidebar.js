@@ -26,6 +26,7 @@ import {
   faDownload,
   faBook,
   faBullhorn,
+  faTags,
 } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { AppRoutes } from "../routes";
@@ -266,6 +267,13 @@ export default (props = {}) => {
                     icon={faComments}
                     link={AppRoutes.WhatsAppChat.path}
                   />
+                  {userInfo.isCorporate && (
+                    <NavItem
+                      title="WA Variables"
+                      icon={faTags}
+                      link={AppRoutes.WhatsAppVariables.path}
+                    />
+                  )}
                 </>
               )}
               {showGmb && (
