@@ -205,6 +205,11 @@ const DetailedEmployeeReport = ({
                           Net Employee Total: Rs. {emp.employee_total || "N/A"}
                         </Typography>
                         <Typography fontSize={14} color={"#111"}>
+                          Total Service Time:{" "}
+                          {(Number(emp.total_service_time || 0) / 60).toFixed(2)}{" "}
+                          hrs
+                        </Typography>
+                        <Typography fontSize={14} color={"#111"}>
                           Net Service Sale: Rs. {netServiceSale}
                         </Typography>
                         <Typography fontSize={14} color={"#111"}>
