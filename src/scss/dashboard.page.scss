@@ -32,40 +32,20 @@
   word-break: break-word;
 }
 
-.three {
-  background-color: lightblue;
-  cursor: pointer;
-}
-
-.three:hover {
-  background-color: whitesmoke;
-}
-
+// Isa Spa brand: warm tan dashboard cards (gold accent on hover).
+.one,
+.two,
+.three,
 .four {
-  background-color: lightblue;
+  background-color: #c7b89d;
   cursor: pointer;
 }
 
+.one:hover,
+.two:hover,
+.three:hover,
 .four:hover {
-  background-color: whitesmoke;
-}
-
-.one {
-  background-color: lightblue;
-  cursor: pointer;
-}
-
-.one:hover {
-  background-color: whitesmoke;
-}
-
-.two {
-  background-color: lightblue;
-  cursor: pointer;
-}
-
-.two:hover {
-  background-color: whitesmoke;
+  background-color: #d8ccb1;
 }
 
 .row-one {
