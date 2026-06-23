@@ -253,6 +253,27 @@ export default () => {
               </div>
             </div>
           </div>
+          <div className="card four h-auto" onClick={onClickReports}>
+            <FontAwesomeIcon icon={faChartBar} className="icon-box flatBlue" />
+            <div className="card-body">
+              <div className="row">
+                <div className="col-lg-12">
+                  <h3 className="text-center">
+                    Rs.{" "}
+                    {(
+                      ((Number(dashboardMonthlyData?.total_payment) || 0) /
+                        (moment().date() || 1)) *
+                      30
+                    ).toFixed(2)}
+                  </h3>
+                  <p className="text-center"> Projected Sales </p>
+                  <div className="bottom-box-three flatWhite">
+                    This Month (MTD &divide; {moment().date()} &times; 30)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </Row>
       </section>
       <h3 className="pos-title text-center mt-5">
