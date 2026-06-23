@@ -201,6 +201,14 @@ export default () => {
                   </h3>
                   <p className="text-center"> Sales </p>
                   <div className="bottom-box-sales flatgrey"> Total (Rs.) </div>
+                  <h6 className="text-center" style={{ marginTop: "8px" }}>
+                    Projected: Rs.{" "}
+                    {(
+                      ((Number(dashboardMonthlyData?.total_payment) || 0) /
+                        (moment().date() || 1)) *
+                      30
+                    ).toFixed(2)}
+                  </h6>
                 </div>
               </div>
             </div>
@@ -250,26 +258,6 @@ export default () => {
                   <p className="text-center"> Sales </p>
                   <div className="bottom-box-three flatWhite">Total (Rs.)</div>
                 </div>
-              </div>
-              <div
-                className="text-center"
-                style={{
-                  marginTop: "10px",
-                  paddingTop: "6px",
-                  borderTop: "1px solid rgba(0,0,0,0.1)",
-                }}
-              >
-                <h5 style={{ margin: 0 }}>
-                  Projected: Rs.{" "}
-                  {(
-                    ((Number(dashboardMonthlyData?.total_payment) || 0) /
-                      (moment().date() || 1)) *
-                    30
-                  ).toFixed(2)}
-                </h5>
-                <small style={{ color: "#444" }}>
-                  This month (MTD &divide; {moment().date()} &times; 30)
-                </small>
               </div>
             </div>
           </div>
