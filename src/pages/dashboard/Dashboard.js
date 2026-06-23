@@ -201,14 +201,6 @@ export default () => {
                   </h3>
                   <p className="text-center"> Sales </p>
                   <div className="bottom-box-sales flatgrey"> Total (Rs.) </div>
-                  <h6 className="text-center" style={{ marginTop: "8px" }}>
-                    Projected: Rs.{" "}
-                    {(
-                      ((Number(dashboardMonthlyData?.total_payment) || 0) /
-                        (moment().date() || 1)) *
-                      30
-                    ).toFixed(2)}
-                  </h6>
                 </div>
               </div>
             </div>
@@ -257,6 +249,25 @@ export default () => {
                   </h3>
                   <p className="text-center"> Sales </p>
                   <div className="bottom-box-three flatWhite">Total (Rs.)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="card four h-auto" onClick={onClickReports}>
+            <FontAwesomeIcon icon={faChartBar} className="icon-box flatBlue" />
+            <div className="card-body">
+              <div className="row">
+                <div className="col-lg-12">
+                  <h3 className="text-center">
+                    Rs.{" "}
+                    {(
+                      ((Number(dashboardMonthlyData?.total_payment) || 0) /
+                        (moment().date() || 1)) *
+                      30
+                    ).toFixed(2)}
+                  </h3>
+                  <p className="text-center"> Projected Sales </p>
+                  <div className="bottom-box-four flatWhite">Estimate</div>
                 </div>
               </div>
             </div>

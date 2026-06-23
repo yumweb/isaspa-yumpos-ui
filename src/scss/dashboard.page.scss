@@ -21,9 +21,15 @@
 }
 
 .card {
-  width: 31%;
-  margin: 10px;
+  width: 23%;
+  margin: 8px;
   display: block;
+}
+
+// Compact the headline numbers so they fit the narrower 4-up cards.
+.card .card-body h3 {
+  font-size: 1.3rem;
+  word-break: break-word;
 }
 
 .three {
@@ -32,6 +38,15 @@
 }
 
 .three:hover {
+  background-color: whitesmoke;
+}
+
+.four {
+  background-color: lightblue;
+  cursor: pointer;
+}
+
+.four:hover {
   background-color: whitesmoke;
 }
 
@@ -401,8 +416,8 @@ h3 {
 
 .bottom-box {
   background: #fff;
-  left: 50%;
-  margin-left: -150px;
+  left: 25%;
+  margin-left: -60px;
   height: 40px;
   width: 120px;
   line-height: 40px;
@@ -417,8 +432,8 @@ h3 {
 
 .bottom-box-appointment {
   background: #fff;
-  left: 50%;
-  margin-left: -150px;
+  left: 25%;
+  margin-left: -60px;
   height: 40px;
   width: 120px;
   line-height: 40px;
@@ -431,8 +446,8 @@ h3 {
 
 .bottom-box-sales {
   background: #fff;
-  left: 50%;
-  margin-left: 20px;
+  left: 75%;
+  margin-left: -60px;
   height: 40px;
   width: 120px;
   line-height: 40px;
@@ -445,8 +460,8 @@ h3 {
 
 .bottom-box-two {
   background: #fff;
-  left: 50%;
-  margin-left: 20px;
+  left: 75%;
+  margin-left: -60px;
   height: 40px;
   width: 120px;
   line-height: 40px;
@@ -459,8 +474,22 @@ h3 {
 
 .bottom-box-three {
   background: #fff;
+  left: 75%;
+  margin-left: -60px;
+  height: 40px;
+  width: 120px;
+  line-height: 40px;
+  padding: 0 20px;
+  border-radius: 50px;
+  display: inline-block;
+  position: absolute;
+  bottom: -20px;
+}
+
+.bottom-box-four {
+  background: #fff;
   left: 50%;
-  margin-left: 20px;
+  margin-left: -60px;
   height: 40px;
   width: 120px;
   line-height: 40px;
