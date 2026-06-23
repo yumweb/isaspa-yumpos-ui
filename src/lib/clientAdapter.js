@@ -25,6 +25,26 @@ const setUserLocation = async (data) => {
   return response.json();
 };
 
+// EOD / Spa Closing report
+const getEodPrefill = async (locationId, date) => {
+  const response = await apiClient.get(
+    `/eod-report/prefill?locationId=${locationId}&date=${date}`
+  );
+  return response.json();
+};
+
+const saveEodReport = async (data) => {
+  const response = await apiClient.post(`/eod-report`, data);
+  return response.json();
+};
+
+const getEodReports = async (locationId, startDate, endDate) => {
+  const response = await apiClient.get(
+    `/eod-report?locationId=${locationId}&startDate=${startDate}&endDate=${endDate}`
+  );
+  return response.json();
+};
+
 const dashboardSales = async (startDate, endDate) => {
   const response = await apiClient.get(
     `/sales/dashboard?startDate=${startDate}&endDate=${endDate}`
@@ -1661,6 +1681,9 @@ export default {
   resetPassword,
   dashboardSales,
   getUserLocations,
+  getEodPrefill,
+  saveEodReport,
+  getEodReports,
   setUserLocation,
   getLocationLeads,
   getSummaryGraph,

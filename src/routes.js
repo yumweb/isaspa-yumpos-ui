@@ -34,6 +34,7 @@ export const AppRoutes = {
   EmployeesView: { path: "/employees-view" },
   RetailProduct: { path: "/retail-product" },
   Reports: { path: "/reports" },
+  EodReport: { path: "/eod-report" },
   Items: { path: "/items" },
   ItemKits: { path: "/item-kits" },
   ItemKitView: { path: "/item-kits/add" },

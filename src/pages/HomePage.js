@@ -59,6 +59,7 @@ import GiftCard from "./giftcard/GiftCard";
 import GiftcardView from "./giftcard/GiftcardView";
 import Coupons from "./cupons/Coupons";
 import Reports from "./reports/Reports";
+import EodReport from "./eod/EodReport";
 import Items from "./items/Services";
 import ItemKits from "./itemkit/ItemKits";
 import Employees from "./employee/Employees";
@@ -645,6 +646,15 @@ export default () => (
       element={
         <RouteWithSidebar>
           <Reports />
+        </RouteWithSidebar>
+      }
+    />
+    <Route
+      exact
+      path={AppRoutes.EodReport.path}
+      element={
+        <RouteWithSidebar>
+          <EodReport />
         </RouteWithSidebar>
       }
     />

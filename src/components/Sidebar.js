@@ -414,6 +414,11 @@ export default (props = {}) => {
                   />
                 )}
               <NavItem
+                title="EOD Report"
+                icon={faBook}
+                link={AppRoutes.EodReport.path}
+              />
+              <NavItem
                 title="Suppliers"
                 icon={faDownload}
                 link={AppRoutes.Suppliers.path}
