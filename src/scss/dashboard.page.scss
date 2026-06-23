@@ -26,10 +26,19 @@
   display: block;
 }
 
-// Compact the headline numbers so they fit the narrower 4-up cards.
+// Compact the headline numbers + labels so they don't overflow the narrower
+// 4-up cards.
 .card .card-body h3 {
-  font-size: 1.3rem;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  margin-bottom: 6px;
   word-break: break-word;
+}
+
+.card .card-body p {
+  font-size: 0.78rem;
+  line-height: 1.2;
+  margin-bottom: 0;
 }
 
 // Isa Spa brand: warm tan dashboard cards (gold accent on hover).
