@@ -154,7 +154,7 @@ const CartItemTable = ({
                   ampm
                   minutesStep={1}
                   minTime={dayjs().hour(9).minute(0).second(0)}
-                  maxTime={dayjs().hour(20).minute(0).second(0)}
+                  maxTime={dayjs().hour(21).minute(0).second(0)}
                   value={toDayjs(item.serviceStartTime)}
                   onChange={(val) =>
                     updateServiceStartTime(
@@ -190,10 +190,10 @@ const CartItemTable = ({
                     const [h, m] = item.serviceStartTime
                       .split(":")
                       .map(Number);
-                    return h * 60 + m + (Number(item.size) || 0) > 1200;
+                    return h * 60 + m + (Number(item.size) || 0) > 1260;
                   })() ? (
                     <span style={{ color: "#d33", marginLeft: 6 }}>
-                      ends after 8 PM
+                      ends after 9 PM
                     </span>
                   ) : null}
                 </span>
