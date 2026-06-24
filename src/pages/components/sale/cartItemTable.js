@@ -11,6 +11,18 @@ import {
 import { useEffect, useRef } from "react";
 import Popup from "reactjs-popup";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+
+// "HH:mm" (24h, how we store it) <-> dayjs (for the 12h AM/PM picker).
+const toDayjs = (s) => {
+  if (!s) return null;
+  const [h, m] = String(s).split(":").map(Number);
+  if (Number.isNaN(h) || Number.isNaN(m)) return null;
+  return dayjs().hour(h).minute(m).second(0);
+};
 
 const CartItemTable = ({
   item,
@@ -137,30 +149,37 @@ const CartItemTable = ({
           ) : null}
           {item._isService && item.type !== "itemkit" ? (
             <div style={{ marginTop: 4 }}>
-              <input
-                type="time"
-                min="09:00"
-                max="20:00"
-                step="60"
-                required
-                value={item.serviceStartTime || ""}
-                onChange={(e) =>
-                  updateServiceStartTime(
-                    item.id,
-                    item.uniqueIdd,
-                    e.target.value
-                  )
-                }
-                title="Service start time (09:00 - 20:00)"
-                style={{
-                  border: item.serviceStartTime
-                    ? "1px solid #bbb"
-                    : "1px solid #d33",
-                  borderRadius: 4,
-                  padding: "3px 6px",
-                  fontSize: 13,
-                }}
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+                  ampm
+                  minutesStep={1}
+                  minTime={dayjs().hour(9).minute(0).second(0)}
+                  maxTime={dayjs().hour(20).minute(0).second(0)}
+                  value={toDayjs(item.serviceStartTime)}
+                  onChange={(val) =>
+                    updateServiceStartTime(
+                      item.id,
+                      item.uniqueIdd,
+                      val && val.isValid() ? val.format("HH:mm") : ""
+                    )
+                  }
+                  slotProps={{
+                    textField: {
+                      size: "small",
+                      required: true,
+                      placeholder: "Start time",
+                      sx: {
+                        width: 150,
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: item.serviceStartTime
+                            ? "#bbb"
+                            : "#d33",
+                        },
+                      },
+                    },
+                  }}
+                />
+              </LocalizationProvider>
               {item.size ? (
                 <span
                   style={{ fontSize: 12, color: "#555", marginLeft: 6 }}
