@@ -17,6 +17,7 @@ const CartItemTable = ({
   removeItemFromCart,
   onOpenCartIteminfoModal,
   updateTechnician,
+  updateServiceStartTime,
   technicians,
   updateItemKitTechnician,
   updateItemKitReedem,
@@ -133,6 +134,52 @@ const CartItemTable = ({
                   ))}
               </Select>
             </FormControl>
+          ) : null}
+          {item._isService && item.type !== "itemkit" ? (
+            <div style={{ marginTop: 4 }}>
+              <input
+                type="time"
+                min="09:00"
+                max="20:00"
+                step="60"
+                required
+                value={item.serviceStartTime || ""}
+                onChange={(e) =>
+                  updateServiceStartTime(
+                    item.id,
+                    item.uniqueIdd,
+                    e.target.value
+                  )
+                }
+                title="Service start time (09:00 - 20:00)"
+                style={{
+                  border: item.serviceStartTime
+                    ? "1px solid #bbb"
+                    : "1px solid #d33",
+                  borderRadius: 4,
+                  padding: "3px 6px",
+                  fontSize: 13,
+                }}
+              />
+              {item.size ? (
+                <span
+                  style={{ fontSize: 12, color: "#555", marginLeft: 6 }}
+                >
+                  {item.size} min
+                  {item.serviceStartTime &&
+                  (() => {
+                    const [h, m] = item.serviceStartTime
+                      .split(":")
+                      .map(Number);
+                    return h * 60 + m + (Number(item.size) || 0) > 1200;
+                  })() ? (
+                    <span style={{ color: "#d33", marginLeft: 6 }}>
+                      ends after 8 PM
+                    </span>
+                  ) : null}
+                </span>
+              ) : null}
+            </div>
           ) : null}
         </td>
         {/* price */}

@@ -964,6 +964,8 @@ const Sales = () => {
         description: item.item.description,
         // Service duration in minutes (used to deduct from time-based family cards)
         size: Number(item.item.size) || 0,
+        // Clock time the service starts (mandatory per service line; 09:00-20:00).
+        serviceStartTime: "",
       };
     }
     if (item.type === "discount") {
@@ -1341,6 +1343,34 @@ const Sales = () => {
     refreshCart([...cartItems], salePaymentMethods);
   };
 
+  // Mandatory service start time per service line (mirrors updateTechnician).
+  const updateServiceStartTime = async (itemId, uniqueIdd, startTime) => {
+    cartItems.map((c) => {
+      if (c.id === itemId && c.uniqueIdd === uniqueIdd) {
+        c.serviceStartTime = startTime;
+      }
+    });
+
+    if (saleName === "edit" && salesId) {
+      const cartItem = cartItems?.find(
+        (c) => c.id === itemId && c.uniqueIdd === uniqueIdd
+      );
+      if (cartItem && cartItem.saleItemId) {
+        try {
+          await clientAdapter.editSaleItem(salesId, cartItem.saleItemId, {
+            serviceStartTime: startTime || null,
+            serviceMinutes: Number(cartItem.size) || 0,
+          });
+        } catch (error) {
+          console.error("Failed to update service start time:", error);
+        }
+      }
+    }
+
+    additemsToLocalStorage([...cartItems], salePaymentMethods);
+    refreshCart([...cartItems], salePaymentMethods);
+  };
+
   const updateItemKitTechnician = (
     itemId,
     subItemId,
@@ -1688,6 +1718,18 @@ const Sales = () => {
         }
       }
     } else {
+      const startTimeMissing = cartItems.some(
+        (sem) => sem.type === "item" && sem._isService && !sem.serviceStartTime
+      );
+      if (startTimeMissing) {
+        setSnackBar({
+          open: true,
+          severity: "error",
+          message: `Please set a Service Start Time for every service in the cart.`,
+        });
+        return;
+      }
+
       const employeeMissing = cartItems.some((sem) => {
         if (
           (sem.type === "item" ||
@@ -1925,6 +1967,8 @@ const Sales = () => {
           discountPercent: i.discountPercent,
           commission: 0,
           serviceEmployeeId: i.serviceEmployeeId,
+          serviceStartTime: i._isService ? i.serviceStartTime || null : null,
+          serviceMinutes: i._isService ? Number(i.size) || 0 : null,
           ...taxData,
           id: i.id,
           serialNumber: 0,
@@ -2145,6 +2189,8 @@ const Sales = () => {
             discountPercent: i.discountPercent,
             commission: 0,
             serviceEmployeeId: i.serviceEmployeeId,
+            serviceStartTime: i._isService ? i.serviceStartTime || null : null,
+            serviceMinutes: i._isService ? Number(i.size) || 0 : null,
             ...taxData,
             id: i.id,
             serialNumber: 0,
@@ -2414,6 +2460,18 @@ const Sales = () => {
         open: true,
         severity: "error",
         message: `Please select a date and time`,
+      });
+      return;
+    }
+
+    const startTimeMissing = cartItems.some(
+      (sem) => sem.type === "item" && sem._isService && !sem.serviceStartTime
+    );
+    if (startTimeMissing) {
+      setSnackBar({
+        open: true,
+        severity: "error",
+        message: `Please set a Service Start Time for every service in the cart.`,
       });
       return;
     }
@@ -3171,6 +3229,9 @@ const Sales = () => {
                                       onOpenCartIteminfoModal
                                     }
                                     updateTechnician={updateTechnician}
+                                    updateServiceStartTime={
+                                      updateServiceStartTime
+                                    }
                                     technicians={technicians}
                                     updateItemKitTechnician={
                                       updateItemKitTechnician
